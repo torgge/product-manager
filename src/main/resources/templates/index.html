@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Product Manager</title>
+    <link rel="stylesheet" href="https://unpkg.com/@patternfly/patternfly@5/patternfly.min.css">
+</head>
+<body>
+    <nav class="pf-v5-c-page__header">
+        <div class="pf-v5-c-page__header-brand">
+            <div class="pf-v5-c-page__header-brand-link">
+                <a href="/" class="pf-v5-c-brand">
+                    <h1 style="color: white; margin: 0; font-size: 1.5rem;">Product Manager</h1>
+                </a>
+            </div>
+        </div>
+        <div class="pf-v5-c-page__header-nav">
+            <nav class="pf-v5-c-nav pf-m-horizontal">
+                <ul class="pf-v5-c-nav__list">
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/" class="pf-v5-c-nav__link pf-m-current">Home</a>
+                    </li>
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/products" class="pf-v5-c-nav__link">Products</a>
+                    </li>
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/customers" class="pf-v5-c-nav__link">Customers</a>
+                    </li>
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/suppliers" class="pf-v5-c-nav__link">Suppliers</a>
+                    </li>
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/purchases" class="pf-v5-c-nav__link">Purchases</a>
+                    </li>
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/sales" class="pf-v5-c-nav__link">Sales</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </nav>
+
+    <main class="pf-v5-c-page__main" style="padding: 2rem;">
+        <h1>Welcome to Product Manager</h1>
+        <p>This application demonstrates Quarkus + Kotlin + Qute + PatternFly</p>
+
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 2rem;">
+            <div class="pf-v5-c-card">
+                <div class="pf-v5-c-card__title">
+                    <h2>Total Products</h2>
+                </div>
+                <div class="pf-v5-c-card__body">
+                    <div style="font-size: 3rem; font-weight: bold; color: #06c;">
+                        {totalProducts}
+                    </div>
+                </div>
+            </div>
+
+            <div class="pf-v5-c-card">
+                <div class="pf-v5-c-card__title">
+                    <h2>Available Products</h2>
+                </div>
+                <div class="pf-v5-c-card__body">
+                    <div style="font-size: 3rem; font-weight: bold; color: #3e8635;">
+                        {availableProducts}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 2rem;">
+            <a href="/products" class="pf-v5-c-button pf-m-primary">View All Products</a>
+            <a href="/products/new" class="pf-v5-c-button pf-m-secondary" style="margin-left: 1rem;">Add New Product</a>
+        </div>
+    </main>
+</body>
+</html>

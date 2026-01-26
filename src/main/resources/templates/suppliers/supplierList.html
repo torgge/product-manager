@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suppliers - Product Manager</title>
+    <link rel="stylesheet" href="https://unpkg.com/@patternfly/patternfly@5/patternfly.min.css">
+</head>
+<body>
+    <nav class="pf-v5-c-page__header">
+        <div class="pf-v5-c-page__header-brand">
+            <div class="pf-v5-c-page__header-brand-link">
+                <a href="/" class="pf-v5-c-brand">
+                    <h1 style="color: white; margin: 0; font-size: 1.5rem;">Product Manager</h1>
+                </a>
+            </div>
+        </div>
+        <div class="pf-v5-c-page__header-nav">
+            <nav class="pf-v5-c-nav pf-m-horizontal">
+                <ul class="pf-v5-c-nav__list">
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/" class="pf-v5-c-nav__link">Home</a>
+                    </li>
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/products" class="pf-v5-c-nav__link">Products</a>
+                    </li>
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/customers" class="pf-v5-c-nav__link">Customers</a>
+                    </li>
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/suppliers" class="pf-v5-c-nav__link pf-m-current">Suppliers</a>
+                    </li>
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/purchases" class="pf-v5-c-nav__link">Purchases</a>
+                    </li>
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/sales" class="pf-v5-c-nav__link">Sales</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </nav>
+
+    <main class="pf-v5-c-page__main" style="padding: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h1>Suppliers</h1>
+            <a href="/suppliers/new" class="pf-v5-c-button pf-m-primary">Add Supplier</a>
+        </div>
+
+        <form method="get" action="/suppliers" style="margin-bottom: 1rem;">
+            <div style="display: flex; gap: 0.5rem;">
+                <input class="pf-v5-c-form-control" type="text" name="search" placeholder="Search suppliers..." value="{search}" style="flex: 1;">
+                <button type="submit" class="pf-v5-c-button pf-m-secondary">Search</button>
+                {#if search}
+                <a href="/suppliers" class="pf-v5-c-button pf-m-link">Clear</a>
+                {/if}
+            </div>
+        </form>
+
+        {#if suppliers.isEmpty()}
+        <div class="pf-v5-c-empty-state" style="margin-top: 2rem;">
+            <div class="pf-v5-c-empty-state__content">
+                <h2 class="pf-v5-c-title pf-m-lg">No suppliers found</h2>
+                <div class="pf-v5-c-empty-state__body">
+                    {#if search}
+                    No suppliers match your search criteria. Try a different search term.
+                    {#else}
+                    There are no suppliers yet. Add your first supplier to get started.
+                    {/if}
+                </div>
+                <a href="/suppliers/new" class="pf-v5-c-button pf-m-primary">Add Supplier</a>
+            </div>
+        </div>
+        {#else}
+        <table class="pf-v5-c-table" style="margin-top: 1rem;">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Document</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {#for supplier in suppliers}
+                <tr>
+                    <td><strong>{supplier.name}</strong></td>
+                    <td>{supplier.email ?: 'N/A'}</td>
+                    <td>{supplier.phone ?: 'N/A'}</td>
+                    <td>{supplier.document ?: 'N/A'}</td>
+                    <td>
+                        <a href="/suppliers/{supplier.id}/edit" class="pf-v5-c-button pf-m-small pf-m-secondary" style="margin-right: 0.5rem;">Edit</a>
+                        <form method="post" action="/suppliers/{supplier.id}/delete" style="display: inline;">
+                            <button type="submit" class="pf-v5-c-button pf-m-small pf-m-danger" onclick="return confirm('Are you sure you want to delete this supplier?')">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {/for}
+            </tbody>
+        </table>
+        {/if}
+    </main>
+</body>
+</html>

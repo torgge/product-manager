@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{#if action == 'create'}New Customer{#else}Edit Customer{/if} - Product Manager</title>
+    <link rel="stylesheet" href="https://unpkg.com/@patternfly/patternfly@5/patternfly.min.css">
+</head>
+<body>
+    <nav class="pf-v5-c-page__header">
+        <div class="pf-v5-c-page__header-brand">
+            <div class="pf-v5-c-page__header-brand-link">
+                <a href="/" class="pf-v5-c-brand">
+                    <h1 style="color: white; margin: 0; font-size: 1.5rem;">Product Manager</h1>
+                </a>
+            </div>
+        </div>
+        <div class="pf-v5-c-page__header-nav">
+            <nav class="pf-v5-c-nav pf-m-horizontal">
+                <ul class="pf-v5-c-nav__list">
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/" class="pf-v5-c-nav__link">Home</a>
+                    </li>
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/products" class="pf-v5-c-nav__link">Products</a>
+                    </li>
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/customers" class="pf-v5-c-nav__link pf-m-current">Customers</a>
+                    </li>
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/suppliers" class="pf-v5-c-nav__link">Suppliers</a>
+                    </li>
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/purchases" class="pf-v5-c-nav__link">Purchases</a>
+                    </li>
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/sales" class="pf-v5-c-nav__link">Sales</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </nav>
+
+    <main class="pf-v5-c-page__main" style="padding: 2rem;">
+        <a href="/customers" class="pf-v5-c-button pf-m-link" style="margin-bottom: 1rem;">&larr; Back to Customers</a>
+
+        <div class="pf-v5-c-card" style="max-width: 600px;">
+            <div class="pf-v5-c-card__title">
+                <h1>{#if action == 'create'}Add New Customer{#else}Edit Customer{/if}</h1>
+            </div>
+            <div class="pf-v5-c-card__body">
+                <form method="post" action="{#if action == 'create'}/customers{#else}/customers/{customer.id}{/if}" class="pf-v5-c-form">
+                    <div class="pf-v5-c-form__group">
+                        <label class="pf-v5-c-form__label" for="name">
+                            <span class="pf-v5-c-form__label-text">Name</span>
+                            <span class="pf-v5-c-form__label-required">*</span>
+                        </label>
+                        <input class="pf-v5-c-form-control" type="text" id="name" name="name" value="{customer.name}" required>
+                    </div>
+
+                    <div class="pf-v5-c-form__group">
+                        <label class="pf-v5-c-form__label" for="email">
+                            <span class="pf-v5-c-form__label-text">Email</span>
+                        </label>
+                        <input class="pf-v5-c-form-control" type="email" id="email" name="email" value="{customer.email}">
+                    </div>
+
+                    <div class="pf-v5-c-form__group">
+                        <label class="pf-v5-c-form__label" for="phone">
+                            <span class="pf-v5-c-form__label-text">Phone</span>
+                        </label>
+                        <input class="pf-v5-c-form-control" type="text" id="phone" name="phone" value="{customer.phone}">
+                    </div>
+
+                    <div class="pf-v5-c-form__group">
+                        <label class="pf-v5-c-form__label" for="document">
+                            <span class="pf-v5-c-form__label-text">CPF/CNPJ</span>
+                        </label>
+                        <input class="pf-v5-c-form-control" type="text" id="document" name="document" value="{customer.document}">
+                    </div>
+
+                    <div class="pf-v5-c-form__group">
+                        <label class="pf-v5-c-form__label" for="address">
+                            <span class="pf-v5-c-form__label-text">Address</span>
+                        </label>
+                        <textarea class="pf-v5-c-form-control" id="address" name="address" rows="3">{customer.address}</textarea>
+                    </div>
+
+                    <div class="pf-v5-c-form__group pf-m-action" style="margin-top: 1rem;">
+                        <button type="submit" class="pf-v5-c-button pf-m-primary">
+                            {#if action == 'create'}Create Customer{#else}Update Customer{/if}
+                        </button>
+                        <a href="/customers" class="pf-v5-c-button pf-m-link">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

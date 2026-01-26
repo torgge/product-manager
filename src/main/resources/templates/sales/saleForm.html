@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Sale Order - Product Manager</title>
+    <link rel="stylesheet" href="https://unpkg.com/@patternfly/patternfly@5/patternfly.min.css">
+</head>
+<body>
+    <nav class="pf-v5-c-page__header">
+        <div class="pf-v5-c-page__header-brand">
+            <div class="pf-v5-c-page__header-brand-link">
+                <a href="/" class="pf-v5-c-brand">
+                    <h1 style="color: white; margin: 0; font-size: 1.5rem;">Product Manager</h1>
+                </a>
+            </div>
+        </div>
+        <div class="pf-v5-c-page__header-nav">
+            <nav class="pf-v5-c-nav pf-m-horizontal">
+                <ul class="pf-v5-c-nav__list">
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/" class="pf-v5-c-nav__link">Home</a>
+                    </li>
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/products" class="pf-v5-c-nav__link">Products</a>
+                    </li>
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/customers" class="pf-v5-c-nav__link">Customers</a>
+                    </li>
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/suppliers" class="pf-v5-c-nav__link">Suppliers</a>
+                    </li>
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/purchases" class="pf-v5-c-nav__link">Purchases</a>
+                    </li>
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/sales" class="pf-v5-c-nav__link pf-m-current">Sales</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </nav>
+
+    <main class="pf-v5-c-page__main" style="padding: 2rem;">
+        <a href="/sales" class="pf-v5-c-button pf-m-link" style="margin-bottom: 1rem;">&larr; Back to Sales</a>
+
+        <div class="pf-v5-c-card" style="max-width: 900px;">
+            <div class="pf-v5-c-card__title">
+                <h1>New Sale Order</h1>
+            </div>
+            <div class="pf-v5-c-card__body">
+                <div class="pf-v5-c-alert pf-m-info" style="margin-bottom: 1rem;">
+                    <div class="pf-v5-c-alert__title">
+                        <span>Use the REST API to create sale orders with items</span>
+                    </div>
+                    <div class="pf-v5-c-alert__description">
+                        <p>POST to /api/sales with JSON data:</p>
+                        <pre style="background: #f5f5f5; padding: 1rem; border-radius: 4px; margin-top: 0.5rem;">
+{
+  "customerId": 1,
+  "items": [
+    {
+      "productId": 1,
+      "quantity": 5,
+      "unitPrice": null  // Uses product price
+    }
+  ],
+  "notes": "First sale order"
+}</pre>
+                    </div>
+                </div>
+
+                {#if customers.isEmpty()}
+                <div class="pf-v5-c-alert pf-m-warning">
+                    <div class="pf-v5-c-alert__title">No customers found</div>
+                    <div class="pf-v5-c-alert__description">
+                        Please <a href="/customers/new">create a customer</a> first before creating sale orders.
+                    </div>
+                </div>
+                {#else if products.isEmpty()}
+                <div class="pf-v5-c-alert pf-m-warning">
+                    <div class="pf-v5-c-alert__title">No products found</div>
+                    <div class="pf-v5-c-alert__description">
+                        Please <a href="/products/new">create a product</a> first before creating sale orders.
+                    </div>
+                </div>
+                {/if}
+            </div>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{title ?: 'Product Manager'}</title>
+    <link rel="stylesheet" href="https://unpkg.com/@patternfly/patternfly@5/patternfly.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/@patternfly/patternfly@5/patternfly-addons.css">
+</head>
+<body>
+    <nav class="pf-v5-c-page__header">
+        <div class="pf-v5-c-page__header-brand">
+            <div class="pf-v5-c-page__header-brand-link">
+                <a href="/" class="pf-v5-c-brand">
+                    <h1 style="color: white; margin: 0; font-size: 1.5rem;">Product Manager</h1>
+                </a>
+            </div>
+        </div>
+        <div class="pf-v5-c-page__header-nav">
+            <nav class="pf-v5-c-nav pf-m-horizontal" aria-label="Global">
+                <ul class="pf-v5-c-nav__list">
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/" class="pf-v5-c-nav__link {#if activeMenu == 'home'}pf-m-current{/if}">
+                            Home
+                        </a>
+                    </li>
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/products" class="pf-v5-c-nav__link {#if activeMenu == 'products'}pf-m-current{/if}">
+                            Products
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </nav>
+
+    <main class="pf-v5-c-page__main" style="padding: 2rem;">
+        <section class="pf-v5-c-page__main-section">
+            {#insert/}
+        </section>
+    </main>
+
+    <footer class="pf-v5-c-page__main-section pf-m-light" style="margin-top: 2rem; padding: 1rem; text-align: center; border-top: 1px solid #d2d2d2;">
+        <p>&copy; 2026 Product Manager - Powered by Quarkus + Qute + PatternFly</p>
+    </footer>
+</body>
+</html>

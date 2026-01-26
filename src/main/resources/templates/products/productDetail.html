@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{product.name} - Product Manager</title>
+    <link rel="stylesheet" href="https://unpkg.com/@patternfly/patternfly@5/patternfly.min.css">
+</head>
+<body>
+    <nav class="pf-v5-c-page__header">
+        <div class="pf-v5-c-page__header-brand">
+            <div class="pf-v5-c-page__header-brand-link">
+                <a href="/" class="pf-v5-c-brand">
+                    <h1 style="color: white; margin: 0; font-size: 1.5rem;">Product Manager</h1>
+                </a>
+            </div>
+        </div>
+        <div class="pf-v5-c-page__header-nav">
+            <nav class="pf-v5-c-nav pf-m-horizontal">
+                <ul class="pf-v5-c-nav__list">
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/" class="pf-v5-c-nav__link">Home</a>
+                    </li>
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/products" class="pf-v5-c-nav__link pf-m-current">Products</a>
+                    </li>
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/customers" class="pf-v5-c-nav__link">Customers</a>
+                    </li>
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/suppliers" class="pf-v5-c-nav__link">Suppliers</a>
+                    </li>
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/purchases" class="pf-v5-c-nav__link">Purchases</a>
+                    </li>
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/sales" class="pf-v5-c-nav__link">Sales</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </nav>
+
+    <main class="pf-v5-c-page__main" style="padding: 2rem;">
+        <a href="/products" class="pf-v5-c-button pf-m-link" style="margin-bottom: 1rem;">&larr; Back to Products</a>
+
+        {#if product}
+        <div class="pf-v5-c-card" style="max-width: 800px;">
+            <div class="pf-v5-c-card__title">
+                <h1>{product.name}</h1>
+            </div>
+            <div class="pf-v5-c-card__body">
+                <dl class="pf-v5-c-description-list">
+                    <div class="pf-v5-c-description-list__group">
+                        <dt class="pf-v5-c-description-list__term">
+                            <span class="pf-v5-c-description-list__text">ID</span>
+                        </dt>
+                        <dd class="pf-v5-c-description-list__description">
+                            <div class="pf-v5-c-description-list__text">{product.id}</div>
+                        </dd>
+                    </div>
+
+                    <div class="pf-v5-c-description-list__group">
+                        <dt class="pf-v5-c-description-list__term">
+                            <span class="pf-v5-c-description-list__text">Description</span>
+                        </dt>
+                        <dd class="pf-v5-c-description-list__description">
+                            <div class="pf-v5-c-description-list__text">
+                                {#if product.description}
+                                {product.description}
+                                {#else}
+                                <span style="color: #6a6e73;">No description provided</span>
+                                {/if}
+                            </div>
+                        </dd>
+                    </div>
+
+                    <div class="pf-v5-c-description-list__group">
+                        <dt class="pf-v5-c-description-list__term">
+                            <span class="pf-v5-c-description-list__text">Category</span>
+                        </dt>
+                        <dd class="pf-v5-c-description-list__description">
+                            <div class="pf-v5-c-description-list__text">
+                                {#if product.category}
+                                <span class="pf-v5-c-label pf-m-blue">
+                                    <span class="pf-v5-c-label__content">{product.category}</span>
+                                </span>
+                                {#else}
+                                <span style="color: #6a6e73;">No category</span>
+                                {/if}
+                            </div>
+                        </dd>
+                    </div>
+
+                    <div class="pf-v5-c-description-list__group">
+                        <dt class="pf-v5-c-description-list__term">
+                            <span class="pf-v5-c-description-list__text">Price</span>
+                        </dt>
+                        <dd class="pf-v5-c-description-list__description">
+                            <div class="pf-v5-c-description-list__text">
+                                <strong style="font-size: 1.5rem; color: #06c;">${product.price}</strong>
+                            </div>
+                        </dd>
+                    </div>
+
+                    <div class="pf-v5-c-description-list__group">
+                        <dt class="pf-v5-c-description-list__term">
+                            <span class="pf-v5-c-description-list__text">Current Stock</span>
+                        </dt>
+                        <dd class="pf-v5-c-description-list__description">
+                            <div class="pf-v5-c-description-list__text">
+                                {#if currentStock > 0}
+                                <span class="pf-v5-c-label pf-m-green">
+                                    <span class="pf-v5-c-label__content">{currentStock} units available</span>
+                                </span>
+                                {#else}
+                                <span class="pf-v5-c-label pf-m-red">
+                                    <span class="pf-v5-c-label__content">Out of stock</span>
+                                </span>
+                                {/if}
+                            </div>
+                        </dd>
+                    </div>
+                </dl>
+            </div>
+            <div class="pf-v5-c-card__footer">
+                <a href="/products/{product.id}/edit" class="pf-v5-c-button pf-m-primary">Edit Product</a>
+                <form method="post" action="/products/{product.id}/delete" style="display: inline;">
+                    <button type="submit" class="pf-v5-c-button pf-m-danger" onclick="return confirm('Are you sure you want to delete this product?')">Delete Product</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Stock Control Section -->
+        <div class="pf-v5-c-card" style="max-width: 800px; margin-top: 2rem;">
+            <div class="pf-v5-c-card__title">
+                <h2>Stock Control</h2>
+            </div>
+            <div class="pf-v5-c-card__body">
+                <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                    <!-- Add Stock Form -->
+                    <form method="post" action="/products/{product.id}/stock/add" style="flex: 1;">
+                        <div class="pf-v5-c-form">
+                            <div class="pf-v5-c-form__group">
+                                <label class="pf-v5-c-form__label" for="add-quantity">
+                                    <span class="pf-v5-c-form__label-text">Add Stock</span>
+                                </label>
+                                <input class="pf-v5-c-form-control" type="number" id="add-quantity" name="quantity" min="1" required>
+                            </div>
+                            <div class="pf-v5-c-form__group">
+                                <input class="pf-v5-c-form-control" type="text" name="reason" placeholder="Reason (optional)">
+                            </div>
+                            <button type="submit" class="pf-v5-c-button pf-m-primary pf-m-small" style="width: 100%;">Add Stock</button>
+                        </div>
+                    </form>
+
+                    <!-- Remove Stock Form -->
+                    <form method="post" action="/products/{product.id}/stock/remove" style="flex: 1;">
+                        <div class="pf-v5-c-form">
+                            <div class="pf-v5-c-form__group">
+                                <label class="pf-v5-c-form__label" for="remove-quantity">
+                                    <span class="pf-v5-c-form__label-text">Remove Stock</span>
+                                </label>
+                                <input class="pf-v5-c-form-control" type="number" id="remove-quantity" name="quantity" min="1" max="{currentStock}" required>
+                            </div>
+                            <div class="pf-v5-c-form__group">
+                                <input class="pf-v5-c-form-control" type="text" name="reason" placeholder="Reason (optional)">
+                            </div>
+                            <button type="submit" class="pf-v5-c-button pf-m-danger pf-m-small" style="width: 100%;">Remove Stock</button>
+                        </div>
+                    </form>
+
+                    <!-- Adjust Stock Form -->
+                    <form method="post" action="/products/{product.id}/stock/adjust" style="flex: 1;">
+                        <div class="pf-v5-c-form">
+                            <div class="pf-v5-c-form__group">
+                                <label class="pf-v5-c-form__label" for="adjust-quantity">
+                                    <span class="pf-v5-c-form__label-text">Adjust Stock</span>
+                                </label>
+                                <input class="pf-v5-c-form-control" type="number" id="adjust-quantity" name="quantity" min="0" required>
+                            </div>
+                            <div class="pf-v5-c-form__group">
+                                <input class="pf-v5-c-form-control" type="text" name="reason" placeholder="Reason (optional)">
+                            </div>
+                            <button type="submit" class="pf-v5-c-button pf-m-secondary pf-m-small" style="width: 100%;">Adjust Stock</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stock Movement History -->
+        <div class="pf-v5-c-card" style="max-width: 800px; margin-top: 2rem;">
+            <div class="pf-v5-c-card__title">
+                <h2>Stock Movement History</h2>
+            </div>
+            <div class="pf-v5-c-card__body">
+                {#if stockMovements && stockMovements.size() > 0}
+                <table class="pf-v5-c-table pf-m-grid-md">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Quantity</th>
+                            <th>Reason</th>
+                            <th>Created By</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {#for movement in stockMovements}
+                        <tr>
+                            <td>{movement.createdAt}</td>
+                            <td>
+                                {#if movement.type.name() == 'IN'}
+                                <span class="pf-v5-c-label pf-m-green">
+                                    <span class="pf-v5-c-label__content">IN</span>
+                                </span>
+                                {#else if movement.type.name() == 'OUT'}
+                                <span class="pf-v5-c-label pf-m-red">
+                                    <span class="pf-v5-c-label__content">OUT</span>
+                                </span>
+                                {#else}
+                                <span class="pf-v5-c-label pf-m-blue">
+                                    <span class="pf-v5-c-label__content">ADJUSTMENT</span>
+                                </span>
+                                {/if}
+                            </td>
+                            <td><strong>{movement.quantity}</strong></td>
+                            <td>
+                                {#if movement.reason}
+                                {movement.reason}
+                                {#else}
+                                <span style="color: #6a6e73; font-style: italic;">No reason provided</span>
+                                {/if}
+                            </td>
+                            <td>{movement.createdBy}</td>
+                        </tr>
+                        {/for}
+                    </tbody>
+                </table>
+                {#else}
+                <div class="pf-v5-c-empty-state">
+                    <div class="pf-v5-c-empty-state__content">
+                        <div class="pf-v5-c-empty-state__icon">
+                            <svg style="width: 64px; height: 64px;" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                            </svg>
+                        </div>
+                        <h3 class="pf-v5-c-title pf-m-lg">No stock movements yet</h3>
+                        <div class="pf-v5-c-empty-state__body">
+                            Use the forms above to add, remove, or adjust stock for this product.
+                        </div>
+                    </div>
+                </div>
+                {/if}
+            </div>
+        </div>
+        {#else}
+        <div class="pf-v5-c-empty-state" style="margin-top: 2rem;">
+            <div class="pf-v5-c-empty-state__content">
+                <h2 class="pf-v5-c-title pf-m-lg">Product not found</h2>
+                <div class="pf-v5-c-empty-state__body">
+                    The requested product does not exist.
+                </div>
+                <a href="/products" class="pf-v5-c-button pf-m-primary">Back to Products</a>
+            </div>
+        </div>
+        {/if}
+    </main>
+</body>
+</html>

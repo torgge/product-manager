@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - Product Manager</title>
+    <link rel="stylesheet" href="https://unpkg.com/@patternfly/patternfly@5/patternfly.min.css">
+</head>
+<body>
+    <nav class="pf-v5-c-page__header">
+        <div class="pf-v5-c-page__header-brand">
+            <div class="pf-v5-c-page__header-brand-link">
+                <a href="/" class="pf-v5-c-brand">
+                    <h1 style="color: white; margin: 0; font-size: 1.5rem;">Product Manager</h1>
+                </a>
+            </div>
+        </div>
+        <div class="pf-v5-c-page__header-nav">
+            <nav class="pf-v5-c-nav pf-m-horizontal">
+                <ul class="pf-v5-c-nav__list">
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/" class="pf-v5-c-nav__link">Home</a>
+                    </li>
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/products" class="pf-v5-c-nav__link pf-m-current">Products</a>
+                    </li>
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/customers" class="pf-v5-c-nav__link">Customers</a>
+                    </li>
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/suppliers" class="pf-v5-c-nav__link">Suppliers</a>
+                    </li>
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/purchases" class="pf-v5-c-nav__link">Purchases</a>
+                    </li>
+                    <li class="pf-v5-c-nav__item">
+                        <a href="/sales" class="pf-v5-c-nav__link">Sales</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </nav>
+
+    <main class="pf-v5-c-page__main" style="padding: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h1>Products</h1>
+            <a href="/products/new" class="pf-v5-c-button pf-m-primary">Add Product</a>
+        </div>
+
+        <form method="get" action="/products" style="margin-bottom: 1rem;">
+            <div style="display: flex; gap: 0.5rem;">
+                <input class="pf-v5-c-form-control" type="text" name="search" placeholder="Search products..." value="{search}" style="flex: 1;">
+                <button type="submit" class="pf-v5-c-button pf-m-secondary">Search</button>
+                {#if search}
+                <a href="/products" class="pf-v5-c-button pf-m-link">Clear</a>
+                {/if}
+            </div>
+        </form>
+
+        {#if products.isEmpty()}
+        <div class="pf-v5-c-empty-state" style="margin-top: 2rem;">
+            <div class="pf-v5-c-empty-state__content">
+                <h2 class="pf-v5-c-title pf-m-lg">No products found</h2>
+                <div class="pf-v5-c-empty-state__body">
+                    {#if search}
+                    No products match your search criteria. Try a different search term.
+                    {#else}
+                    There are no products yet. Add your first product to get started.
+                    {/if}
+                </div>
+                <a href="/products/new" class="pf-v5-c-button pf-m-primary">Add Product</a>
+            </div>
+        </div>
+        {#else}
+        <table class="pf-v5-c-table" style="margin-top: 1rem;">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {#for product in products}
+                <tr>
+                    <td>
+                        <strong>{product.name}</strong>
+                        {#if product.description}
+                        <br><small style="color: #6a6e73;">{product.description}</small>
+                        {/if}
+                    </td>
+                    <td>
+                        {#if product.category}
+                        <span class="pf-v5-c-label pf-m-blue">
+                            <span class="pf-v5-c-label__content">{product.category}</span>
+                        </span>
+                        {#else}
+                        <span style="color: #6a6e73;">N/A</span>
+                        {/if}
+                    </td>
+                    <td>${product.price}</td>
+                    <td>
+                        {#if stockMap.get(product.id) > 0}
+                        <span class="pf-v5-c-label pf-m-green">
+                            <span class="pf-v5-c-label__content">{stockMap.get(product.id)}</span>
+                        </span>
+                        {#else}
+                        <span class="pf-v5-c-label pf-m-red">
+                            <span class="pf-v5-c-label__content">Out of stock</span>
+                        </span>
+                        {/if}
+                    </td>
+                    <td>
+                        <a href="/products/{product.id}" class="pf-v5-c-button pf-m-small pf-m-secondary" style="margin-right: 0.5rem;">View</a>
+                        <a href="/products/{product.id}/edit" class="pf-v5-c-button pf-m-small pf-m-secondary" style="margin-right: 0.5rem;">Edit</a>
+                        <form method="post" action="/products/{product.id}/delete" style="display: inline;">
+                            <button type="submit" class="pf-v5-c-button pf-m-small pf-m-danger" onclick="return confirm('Are you sure you want to delete this product?')">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {/for}
+            </tbody>
+        </table>
+        {/if}
+    </main>
+</body>
+</html>

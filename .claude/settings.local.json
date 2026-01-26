@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew quarkusDev*)",
+      "Bash(./gradlew clean*)",
+      "Bash(./gradlew build*)",
+      "Bash(./gradlew test*)",
+      "Bash(./gradlew check*)",
+      "Bash(gradle:*)",
+      "Bash(command -v:*)",
+      "Bash(java:*)",
+      "Bash(curl:*)",
+      "Bash(chmod:*)",
+      "Bash(ls:*)",
+      "Bash(tree:*)",
+      "Bash(docker-compose*)",
+      "Bash(docker compose*)",
+      "Bash(.claude/scripts/verify-skills.sh)",
+      "Bash(/Users/gbonespirito/Development/product-manager/.claude/scripts/verify-skills.sh:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  },
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/scripts/verify-skills.sh",
+            "statusMessage": "Verifying skill structure..."
+          }
+        ]
+      }
+    ]
+  }
+}
