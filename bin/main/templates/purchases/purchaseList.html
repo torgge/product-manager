@@ -36,7 +36,7 @@
             {#for purchase in purchases}
             <tr>
                 <td><strong>#{purchase.id}</strong></td>
-                <td>{purchase.supplier?.name}</td>
+                <td>{purchase.supplier.name}</td>
                 <td>{purchase.orderDate}</td>
                 <td style="font-weight: 600; color: var(--rh-color-interactive-primary);">${purchase.totalAmount}</td>
                 <td>

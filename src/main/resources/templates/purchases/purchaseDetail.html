@@ -11,7 +11,7 @@
     <div class="rh-card__body">
         <dl style="display: grid; grid-template-columns: 1fr 2fr; gap: var(--rh-space-md);">
             <dt class="rh-text-secondary">Supplier</dt>
-            <dd>{purchase.supplier?.name}</dd>
+            <dd>{purchase.supplier.name}</dd>
 
             <dt class="rh-text-secondary">Order Date</dt>
             <dd>{purchase.orderDate}</dd>
@@ -77,7 +77,7 @@
         <tbody>
             {#for item in purchase.items}
             <tr>
-                <td><strong>{item.product?.name}</strong></td>
+                <td><strong>{item.product.name}</strong></td>
                 <td>{item.quantity}</td>
                 <td>${item.unitPrice}</td>
                 <td style="font-weight: 600; color: var(--rh-color-interactive-primary);">${item.subtotal}</td>
