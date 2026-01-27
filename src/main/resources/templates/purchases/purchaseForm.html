@@ -1,299 +1,223 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Purchase Order - Product Manager</title>
-    <link rel="stylesheet" href="https://unpkg.com/@patternfly/patternfly@5/patternfly.min.css">
-    <style>
-        .items-table { margin-top: 1rem; }
-        .items-table td { vertical-align: middle; }
-        .remove-btn { cursor: pointer; }
-        #totalAmount { font-size: 1.5rem; font-weight: bold; color: #06c; }
-    </style>
-</head>
-<body>
-    <nav class="pf-v5-c-page__header">
-        <div class="pf-v5-c-page__header-brand">
-            <div class="pf-v5-c-page__header-brand-link">
-                <a href="/" class="pf-v5-c-brand">
-                    <h1 style="color: white; margin: 0; font-size: 1.5rem;">Product Manager</h1>
-                </a>
+{#include layout/base}
+{#title}New Purchase Order - Product Manager{/title}
+
+<a href="/purchases" class="rh-btn rh-btn--link rh-mb-lg" style="display: inline-block;">&larr; Back to Purchases</a>
+
+{#if suppliers.isEmpty()}
+<div class="rh-alert rh-alert--warning" style="max-width: 900px;">
+    <strong>No suppliers found</strong>
+    <p>Please <a href="/suppliers/new">create a supplier</a> first before creating purchase orders.</p>
+</div>
+{#else if products.isEmpty()}
+<div class="rh-alert rh-alert--warning" style="max-width: 900px;">
+    <strong>No products found</strong>
+    <p>Please <a href="/products/new">create a product</a> first before creating purchase orders.</p>
+</div>
+{#else}
+<div class="rh-card" style="max-width: 1200px;">
+    <div class="rh-card__header">
+        <h1 class="rh-card__title">New Purchase Order</h1>
+    </div>
+    <div class="rh-card__body">
+        <form id="purchaseForm">
+            <div class="rh-form-group">
+                <label class="rh-form-label rh-form-label--required" for="supplierId">Supplier</label>
+                <select class="rh-form-control" id="supplierId" name="supplierId" required>
+                    <option value="">Select a supplier...</option>
+                    {#for supplier in suppliers}
+                    <option value="{supplier.id}">{supplier.name} - {supplier.document}</option>
+                    {/for}
+                </select>
             </div>
-        </div>
-        <div class="pf-v5-c-page__header-nav">
-            <nav class="pf-v5-c-nav pf-m-horizontal">
-                <ul class="pf-v5-c-nav__list">
-                    <li class="pf-v5-c-nav__item">
-                        <a href="/" class="pf-v5-c-nav__link">Home</a>
-                    </li>
-                    <li class="pf-v5-c-nav__item">
-                        <a href="/products" class="pf-v5-c-nav__link">Products</a>
-                    </li>
-                    <li class="pf-v5-c-nav__item">
-                        <a href="/customers" class="pf-v5-c-nav__link">Customers</a>
-                    </li>
-                    <li class="pf-v5-c-nav__item">
-                        <a href="/suppliers" class="pf-v5-c-nav__link">Suppliers</a>
-                    </li>
-                    <li class="pf-v5-c-nav__item">
-                        <a href="/purchases" class="pf-v5-c-nav__link pf-m-current">Purchases</a>
-                    </li>
-                    <li class="pf-v5-c-nav__item">
-                        <a href="/sales" class="pf-v5-c-nav__link">Sales</a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-    </nav>
 
-    <main class="pf-v5-c-page__main" style="padding: 2rem;">
-        <a href="/purchases" class="pf-v5-c-button pf-m-link" style="margin-bottom: 1rem;">&larr; Back to Purchases</a>
-
-        {#if suppliers.isEmpty()}
-        <div class="pf-v5-c-alert pf-m-warning" style="max-width: 900px;">
-            <div class="pf-v5-c-alert__title">No suppliers found</div>
-            <div class="pf-v5-c-alert__description">
-                Please <a href="/suppliers/new">create a supplier</a> first before creating purchase orders.
+            <div class="rh-form-group">
+                <label class="rh-form-label rh-form-label--required">Items</label>
+                <table class="rh-table" id="itemsTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 40%;">Product</th>
+                            <th style="width: 15%;">Quantity</th>
+                            <th style="width: 20%;">Unit Price</th>
+                            <th style="width: 20%;">Subtotal</th>
+                            <th style="width: 5%;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="itemsBody">
+                    </tbody>
+                </table>
+                <button type="button" class="rh-btn rh-btn--secondary rh-btn--sm rh-mt-md" id="addItemBtn">
+                    + Add Item
+                </button>
             </div>
-        </div>
-        {#else if products.isEmpty()}
-        <div class="pf-v5-c-alert pf-m-warning" style="max-width: 900px;">
-            <div class="pf-v5-c-alert__title">No products found</div>
-            <div class="pf-v5-c-alert__description">
-                Please <a href="/products/new">create a product</a> first before creating purchase orders.
+
+            <div class="rh-form-group rh-mt-lg">
+                <label class="rh-form-label">Total Amount</label>
+                <div id="totalAmount" style="font-size: 1.5rem; font-weight: 700; color: var(--rh-color-interactive-primary);">$0.00</div>
             </div>
-        </div>
-        {#else}
-        <div class="pf-v5-c-card" style="max-width: 1200px;">
-            <div class="pf-v5-c-card__title">
-                <h1>New Purchase Order</h1>
+
+            <div class="rh-form-group">
+                <label class="rh-form-label" for="notes">Notes</label>
+                <textarea class="rh-form-control" id="notes" name="notes" rows="3" placeholder="Additional notes..."></textarea>
             </div>
-            <div class="pf-v5-c-card__body">
-                <form id="purchaseForm" class="pf-v5-c-form">
-                    <!-- Supplier Selection -->
-                    <div class="pf-v5-c-form__group">
-                        <label class="pf-v5-c-form__label" for="supplierId">
-                            <span class="pf-v5-c-form__label-text">Supplier</span>
-                            <span class="pf-v5-c-form__label-required">*</span>
-                        </label>
-                        <select class="pf-v5-c-form-control" id="supplierId" name="supplierId" required>
-                            <option value="">Select a supplier...</option>
-                            {#for supplier in suppliers}
-                            <option value="{supplier.id}">{supplier.name} - {supplier.document}</option>
-                            {/for}
-                        </select>
-                    </div>
 
-                    <!-- Items Section -->
-                    <div class="pf-v5-c-form__group">
-                        <label class="pf-v5-c-form__label">
-                            <span class="pf-v5-c-form__label-text">Items</span>
-                            <span class="pf-v5-c-form__label-required">*</span>
-                        </label>
-
-                        <table class="pf-v5-c-table items-table" id="itemsTable">
-                            <thead>
-                                <tr>
-                                    <th style="width: 40%;">Product</th>
-                                    <th style="width: 15%;">Quantity</th>
-                                    <th style="width: 20%;">Unit Price</th>
-                                    <th style="width: 20%;">Subtotal</th>
-                                    <th style="width: 5%;"></th>
-                                </tr>
-                            </thead>
-                            <tbody id="itemsBody">
-                                <!-- Items will be added here dynamically -->
-                            </tbody>
-                        </table>
-
-                        <button type="button" class="pf-v5-c-button pf-m-secondary pf-m-small" id="addItemBtn" style="margin-top: 0.5rem;">
-                            + Add Item
-                        </button>
-                    </div>
-
-                    <!-- Total Amount -->
-                    <div class="pf-v5-c-form__group" style="margin-top: 1rem;">
-                        <label class="pf-v5-c-form__label">
-                            <span class="pf-v5-c-form__label-text">Total Amount</span>
-                        </label>
-                        <div id="totalAmount">$0.00</div>
-                    </div>
-
-                    <!-- Notes -->
-                    <div class="pf-v5-c-form__group">
-                        <label class="pf-v5-c-form__label" for="notes">
-                            <span class="pf-v5-c-form__label-text">Notes</span>
-                        </label>
-                        <textarea class="pf-v5-c-form-control" id="notes" name="notes" rows="3" placeholder="Additional notes..."></textarea>
-                    </div>
-
-                    <!-- Submit Buttons -->
-                    <div class="pf-v5-c-form__group pf-m-action" style="margin-top: 1rem;">
-                        <button type="submit" class="pf-v5-c-button pf-m-primary">Create Purchase Order</button>
-                        <a href="/purchases" class="pf-v5-c-button pf-m-link">Cancel</a>
-                    </div>
-                </form>
+            <div class="rh-flex rh-flex--gap-md rh-mt-lg">
+                <button type="submit" class="rh-btn rh-btn--primary">Create Purchase Order</button>
+                <a href="/purchases" class="rh-btn rh-btn--link">Cancel</a>
             </div>
-        </div>
-        {/if}
-    </main>
+        </form>
+    </div>
+</div>
+{/if}
 
-    <script>
-        // Products data from server
-        const products = [
-            {#for product in products}
-            \{ id: {product.id}, name: '{product.name}', price: {product.price ?: 0} }{#if product_hasNext},{/if}
-            {/for}
-        ];
+<script>
+    let products = [];
+    let itemCounter = 0;
 
-        let itemCounter = 0;
+    document.addEventListener('DOMContentLoaded', async function() {
+        try {
+            const response = await fetch('/api/products');
+            if (response.ok) {
+                products = await response.json();
+            }
+        } catch (e) {
+            console.error('Failed to load products', e);
+        }
 
-        // Add first item on load
-        document.addEventListener('DOMContentLoaded', function() {
-            addItem();
+        addItem();
+        document.getElementById('addItemBtn').addEventListener('click', addItem);
+        document.getElementById('purchaseForm').addEventListener('submit', handleSubmit);
+    });
 
-            document.getElementById('addItemBtn').addEventListener('click', addItem);
-            document.getElementById('purchaseForm').addEventListener('submit', handleSubmit);
+    function addItem() {
+        itemCounter++;
+        const tbody = document.getElementById('itemsBody');
+        const row = document.createElement('tr');
+        row.id = 'item-' + itemCounter;
+
+        let productOptions = '<option value="">Select product...</option>';
+        products.forEach(p => {
+            productOptions += '<option value="' + p.id + '" data-price="' + p.price + '">' + p.name + '</option>';
         });
 
-        function addItem() {
-            itemCounter++;
-            const tbody = document.getElementById('itemsBody');
-            const row = document.createElement('tr');
-            row.id = 'item-' + itemCounter;
+        row.innerHTML =
+            '<td>' +
+                '<select class="rh-form-control item-product" name="items[' + itemCounter + '].productId" required onchange="updateSubtotal(' + itemCounter + ')">' +
+                    productOptions +
+                '</select>' +
+            '</td>' +
+            '<td>' +
+                '<input type="number" class="rh-form-control item-quantity" name="items[' + itemCounter + '].quantity" min="1" value="1" required oninput="updateSubtotal(' + itemCounter + ')">' +
+            '</td>' +
+            '<td>' +
+                '<input type="number" class="rh-form-control item-price" name="items[' + itemCounter + '].unitPrice" step="0.01" min="0" required oninput="updateSubtotal(' + itemCounter + ')">' +
+            '</td>' +
+            '<td>' +
+                '<strong class="item-subtotal" id="subtotal-' + itemCounter + '">$0.00</strong>' +
+            '</td>' +
+            '<td>' +
+                '<button type="button" class="rh-btn rh-btn--danger rh-btn--sm" onclick="removeItem(' + itemCounter + ')" title="Remove item">&times;</button>' +
+            '</td>';
 
-            // Build product options
-            let productOptions = '<option value="">Select product...</option>';
-            products.forEach(p => {
-                productOptions += '<option value="' + p.id + '" data-price="' + p.price + '">' + p.name + '</option>';
-            });
+        tbody.appendChild(row);
+    }
 
-            row.innerHTML =
-                '<td>' +
-                    '<select class="pf-v5-c-form-control item-product" name="items[' + itemCounter + '].productId" required onchange="updateSubtotal(' + itemCounter + ')">' +
-                        productOptions +
-                    '</select>' +
-                '</td>' +
-                '<td>' +
-                    '<input type="number" class="pf-v5-c-form-control item-quantity" name="items[' + itemCounter + '].quantity" min="1" value="1" required oninput="updateSubtotal(' + itemCounter + ')">' +
-                '</td>' +
-                '<td>' +
-                    '<input type="number" class="pf-v5-c-form-control item-price" name="items[' + itemCounter + '].unitPrice" step="0.01" min="0" required oninput="updateSubtotal(' + itemCounter + ')">' +
-                '</td>' +
-                '<td>' +
-                    '<strong class="item-subtotal" id="subtotal-' + itemCounter + '">$0.00</strong>' +
-                '</td>' +
-                '<td>' +
-                    '<button type="button" class="pf-v5-c-button pf-m-plain pf-m-small remove-btn" onclick="removeItem(' + itemCounter + ')" title="Remove item">' +
-                        '<svg fill="currentColor" height="1em" width="1em" viewBox="0 0 352 512">' +
-                            '<path d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"/>' +
-                        '</svg>' +
-                    '</button>' +
-                '</td>';
-
-            tbody.appendChild(row);
-        }
-
-        function removeItem(id) {
-            const row = document.getElementById('item-' + id);
-            if (row) {
-                row.remove();
-                updateTotal();
-            }
-        }
-
-        function updateSubtotal(id) {
-            const row = document.getElementById('item-' + id);
-            if (!row) return;
-
-            const productSelect = row.querySelector('.item-product');
-            const quantityInput = row.querySelector('.item-quantity');
-            const priceInput = row.querySelector('.item-price');
-            const subtotalSpan = row.querySelector('.item-subtotal');
-
-            // Auto-fill price from product
-            if (productSelect.value && !priceInput.value) {
-                const selectedOption = productSelect.options[productSelect.selectedIndex];
-                const productPrice = selectedOption.getAttribute('data-price');
-                if (productPrice) {
-                    priceInput.value = parseFloat(productPrice).toFixed(2);
-                }
-            }
-
-            const quantity = parseFloat(quantityInput.value) || 0;
-            const price = parseFloat(priceInput.value) || 0;
-            const subtotal = quantity * price;
-
-            subtotalSpan.textContent = '$' + subtotal.toFixed(2);
+    function removeItem(id) {
+        const row = document.getElementById('item-' + id);
+        if (row) {
+            row.remove();
             updateTotal();
         }
+    }
 
-        function updateTotal() {
-            let total = 0;
-            document.querySelectorAll('.item-subtotal').forEach(span => {
-                const value = parseFloat(span.textContent.replace('$', '')) || 0;
-                total += value;
-            });
-            document.getElementById('totalAmount').textContent = '$' + total.toFixed(2);
+    function updateSubtotal(id) {
+        const row = document.getElementById('item-' + id);
+        if (!row) return;
+
+        const productSelect = row.querySelector('.item-product');
+        const quantityInput = row.querySelector('.item-quantity');
+        const priceInput = row.querySelector('.item-price');
+        const subtotalSpan = row.querySelector('.item-subtotal');
+
+        if (productSelect.value && !priceInput.value) {
+            const selectedOption = productSelect.options[productSelect.selectedIndex];
+            const productPrice = selectedOption.getAttribute('data-price');
+            if (productPrice) {
+                priceInput.value = parseFloat(productPrice).toFixed(2);
+            }
         }
 
-        async function handleSubmit(e) {
-            e.preventDefault();
+        const quantity = parseFloat(quantityInput.value) || 0;
+        const price = parseFloat(priceInput.value) || 0;
+        const subtotal = quantity * price;
 
-            const formData = new FormData(e.target);
-            const supplierId = formData.get('supplierId');
-            const notes = formData.get('notes');
+        subtotalSpan.textContent = '$' + subtotal.toFixed(2);
+        updateTotal();
+    }
 
-            // Collect items
-            const items = [];
-            const rows = document.querySelectorAll('#itemsBody tr');
+    function updateTotal() {
+        let total = 0;
+        document.querySelectorAll('.item-subtotal').forEach(span => {
+            const value = parseFloat(span.textContent.replace('$', '')) || 0;
+            total += value;
+        });
+        document.getElementById('totalAmount').textContent = '$' + total.toFixed(2);
+    }
 
-            rows.forEach(row => {
-                const productSelect = row.querySelector('.item-product');
-                const quantity = row.querySelector('.item-quantity').value;
-                const unitPrice = row.querySelector('.item-price').value;
+    async function handleSubmit(e) {
+        e.preventDefault();
 
-                if (productSelect.value && quantity && unitPrice) {
-                    items.push({
-                        productId: parseInt(productSelect.value),
-                        quantity: parseInt(quantity),
-                        unitPrice: parseFloat(unitPrice)
-                    });
-                }
-            });
+        const formData = new FormData(e.target);
+        const supplierId = formData.get('supplierId');
+        const notes = formData.get('notes');
 
-            if (items.length === 0) {
-                alert('Please add at least one item to the purchase order.');
-                return;
-            }
+        const items = [];
+        const rows = document.querySelectorAll('#itemsBody tr');
 
-            const purchaseData = {
-                supplierId: parseInt(supplierId),
-                items: items,
-                notes: notes || null
-            };
+        rows.forEach(row => {
+            const productSelect = row.querySelector('.item-product');
+            const quantity = row.querySelector('.item-quantity').value;
+            const unitPrice = row.querySelector('.item-price').value;
 
-            try {
-                const response = await fetch('/api/purchases', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(purchaseData)
+            if (productSelect.value && quantity && unitPrice) {
+                items.push({
+                    productId: parseInt(productSelect.value),
+                    quantity: parseInt(quantity),
+                    unitPrice: parseFloat(unitPrice)
                 });
-
-                if (response.ok) {
-                    const purchase = await response.json();
-                    window.location.href = '/purchases/' + purchase.id;
-                } else {
-                    const error = await response.text();
-                    alert('Error creating purchase order: ' + error);
-                }
-            } catch (error) {
-                alert('Error creating purchase order: ' + error.message);
             }
+        });
+
+        if (items.length === 0) {
+            alert('Please add at least one item to the purchase order.');
+            return;
         }
-    </script>
-</body>
-</html>
+
+        const purchaseData = {
+            supplierId: parseInt(supplierId),
+            items: items,
+            notes: notes || null
+        };
+
+        try {
+            const response = await fetch('/api/purchases', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(purchaseData)
+            });
+
+            if (response.ok) {
+                const purchase = await response.json();
+                window.location.href = '/purchases/' + purchase.id;
+            } else {
+                const error = await response.text();
+                alert('Error creating purchase order: ' + error);
+            }
+        } catch (error) {
+            alert('Error creating purchase order: ' + error.message);
+        }
+    }
+</script>
+
+{/include}

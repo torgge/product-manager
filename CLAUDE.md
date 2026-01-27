@@ -31,7 +31,7 @@ If any skills are missing, recreate them following the patterns in existing skil
 This is a **Quarkus 3.x** application with:
 - **Language**: Kotlin
 - **Architecture**: DDD (Domain-Driven Design)
-- **UI**: Qute templates + PatternFly v5
+- **UI**: Qute templates + PatternFly v6
 - **Database**: PostgreSQL
 - **Build**: Gradle
 
@@ -64,5 +64,5 @@ domain/repository/   → Panache repositories
 - Use `data class` for entities with `var` fields
 - Constructor injection for dependencies
 - `@Transactional` on write operations
-- PatternFly v5 CSS classes (pf-v5-c-*)
+- PatternFly v6 CSS classes (pf-v6-c-*)
 - Qute syntax: `{variable}`, `{#if}`, `{#for}`

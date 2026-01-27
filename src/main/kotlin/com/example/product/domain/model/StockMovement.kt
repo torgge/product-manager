@@ -1,9 +1,11 @@
 package com.example.product.domain.model
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
 @Entity
+@JsonIgnoreProperties("hibernateLazyInitializer", "handler")
 data class StockMovement(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -11,6 +13,7 @@ data class StockMovement(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
+    @JsonIgnoreProperties("hibernateLazyInitializer", "handler")
     var product: Product? = null,
 
     @Enumerated(EnumType.STRING)

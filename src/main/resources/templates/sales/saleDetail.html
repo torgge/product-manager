@@ -1,174 +1,105 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sale Order #{sale.id} - Product Manager</title>
-    <link rel="stylesheet" href="https://unpkg.com/@patternfly/patternfly@5/patternfly.min.css">
-</head>
-<body>
-    <nav class="pf-v5-c-page__header">
-        <div class="pf-v5-c-page__header-brand">
-            <div class="pf-v5-c-page__header-brand-link">
-                <a href="/" class="pf-v5-c-brand">
-                    <h1 style="color: white; margin: 0; font-size: 1.5rem;">Product Manager</h1>
-                </a>
-            </div>
-        </div>
-        <div class="pf-v5-c-page__header-nav">
-            <nav class="pf-v5-c-nav pf-m-horizontal">
-                <ul class="pf-v5-c-nav__list">
-                    <li class="pf-v5-c-nav__item">
-                        <a href="/" class="pf-v5-c-nav__link">Home</a>
-                    </li>
-                    <li class="pf-v5-c-nav__item">
-                        <a href="/products" class="pf-v5-c-nav__link">Products</a>
-                    </li>
-                    <li class="pf-v5-c-nav__item">
-                        <a href="/customers" class="pf-v5-c-nav__link">Customers</a>
-                    </li>
-                    <li class="pf-v5-c-nav__item">
-                        <a href="/suppliers" class="pf-v5-c-nav__link">Suppliers</a>
-                    </li>
-                    <li class="pf-v5-c-nav__item">
-                        <a href="/purchases" class="pf-v5-c-nav__link">Purchases</a>
-                    </li>
-                    <li class="pf-v5-c-nav__item">
-                        <a href="/sales" class="pf-v5-c-nav__link pf-m-current">Sales</a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-    </nav>
+{#include layout/base}
+{#title}Sale Order #{sale.id} - Product Manager{/title}
 
-    <main class="pf-v5-c-page__main" style="padding: 2rem;">
-        <a href="/sales" class="pf-v5-c-button pf-m-link" style="margin-bottom: 1rem;">&larr; Back to Sales</a>
+<a href="/sales" class="rh-btn rh-btn--link rh-mb-lg" style="display: inline-block;">&larr; Back to Sales</a>
 
-        {#if sale}
-        <div class="pf-v5-c-card" style="max-width: 900px;">
-            <div class="pf-v5-c-card__title">
-                <h1>Sale Order #{sale.id}</h1>
-            </div>
-            <div class="pf-v5-c-card__body">
-                <dl class="pf-v5-c-description-list">
-                    <div class="pf-v5-c-description-list__group">
-                        <dt class="pf-v5-c-description-list__term">
-                            <span class="pf-v5-c-description-list__text">Customer</span>
-                        </dt>
-                        <dd class="pf-v5-c-description-list__description">
-                            <div class="pf-v5-c-description-list__text">{sale.customer?.name}</div>
-                        </dd>
-                    </div>
+{#if sale}
+<div class="rh-card" style="max-width: 900px;">
+    <div class="rh-card__header">
+        <h1 class="rh-card__title">Sale Order #{sale.id}</h1>
+    </div>
+    <div class="rh-card__body">
+        <dl style="display: grid; grid-template-columns: 1fr 2fr; gap: var(--rh-space-md);">
+            <dt class="rh-text-secondary">Customer</dt>
+            <dd>{sale.customer?.name}</dd>
 
-                    <div class="pf-v5-c-description-list__group">
-                        <dt class="pf-v5-c-description-list__term">
-                            <span class="pf-v5-c-description-list__text">Order Date</span>
-                        </dt>
-                        <dd class="pf-v5-c-description-list__description">
-                            <div class="pf-v5-c-description-list__text">{sale.orderDate}</div>
-                        </dd>
-                    </div>
+            <dt class="rh-text-secondary">Order Date</dt>
+            <dd>{sale.orderDate}</dd>
 
-                    <div class="pf-v5-c-description-list__group">
-                        <dt class="pf-v5-c-description-list__term">
-                            <span class="pf-v5-c-description-list__text">Status</span>
-                        </dt>
-                        <dd class="pf-v5-c-description-list__description">
-                            <div class="pf-v5-c-description-list__text">
-                                {#if sale.status.name() == 'PENDING'}
-                                <span class="pf-v5-c-label pf-m-orange">
-                                    <span class="pf-v5-c-label__content">Pending</span>
-                                </span>
-                                {#else if sale.status.name() == 'CONFIRMED'}
-                                <span class="pf-v5-c-label pf-m-blue">
-                                    <span class="pf-v5-c-label__content">Confirmed</span>
-                                </span>
-                                {#else if sale.status.name() == 'RECEIVED'}
-                                <span class="pf-v5-c-label pf-m-green">
-                                    <span class="pf-v5-c-label__content">Delivered</span>
-                                </span>
-                                {#else}
-                                <span class="pf-v5-c-label pf-m-red">
-                                    <span class="pf-v5-c-label__content">Cancelled</span>
-                                </span>
-                                {/if}
-                            </div>
-                        </dd>
-                    </div>
-
-                    <div class="pf-v5-c-description-list__group">
-                        <dt class="pf-v5-c-description-list__term">
-                            <span class="pf-v5-c-description-list__text">Total Amount</span>
-                        </dt>
-                        <dd class="pf-v5-c-description-list__description">
-                            <div class="pf-v5-c-description-list__text">
-                                <strong style="font-size: 1.5rem; color: #06c;">${sale.totalAmount}</strong>
-                            </div>
-                        </dd>
-                    </div>
-
-                    {#if sale.notes}
-                    <div class="pf-v5-c-description-list__group">
-                        <dt class="pf-v5-c-description-list__term">
-                            <span class="pf-v5-c-description-list__text">Notes</span>
-                        </dt>
-                        <dd class="pf-v5-c-description-list__description">
-                            <div class="pf-v5-c-description-list__text">{sale.notes}</div>
-                        </dd>
-                    </div>
-                    {/if}
-                </dl>
-            </div>
-            <div class="pf-v5-c-card__footer">
+            <dt class="rh-text-secondary">Status</dt>
+            <dd>
                 {#if sale.status.name() == 'PENDING'}
-                <form method="post" action="/sales/{sale.id}/confirm" style="display: inline;">
-                    <button type="submit" class="pf-v5-c-button pf-m-primary">Confirm Order</button>
-                </form>
-                <form method="post" action="/sales/{sale.id}/cancel" style="display: inline;">
-                    <button type="submit" class="pf-v5-c-button pf-m-danger">Cancel Order</button>
-                </form>
+                <span class="rh-label rh-label--warning">Pending</span>
                 {#else if sale.status.name() == 'CONFIRMED'}
-                <form method="post" action="/sales/{sale.id}/deliver" style="display: inline;">
-                    <button type="submit" class="pf-v5-c-button pf-m-primary">Mark as Delivered</button>
-                </form>
-                <form method="post" action="/sales/{sale.id}/cancel" style="display: inline;">
-                    <button type="submit" class="pf-v5-c-button pf-m-danger">Cancel Order</button>
-                </form>
+                <span class="rh-label rh-label--info">Confirmed</span>
+                {#else if sale.status.name() == 'RECEIVED'}
+                <span class="rh-label rh-label--success">Delivered</span>
+                {#else}
+                <span class="rh-label rh-label--danger">Cancelled</span>
                 {/if}
-            </div>
-        </div>
+            </dd>
 
-        <!-- Items Table -->
-        <div class="pf-v5-c-card" style="max-width: 900px; margin-top: 2rem;">
-            <div class="pf-v5-c-card__title">
-                <h2>Order Items</h2>
-            </div>
-            <div class="pf-v5-c-card__body">
-                {#if sale.items && sale.items.size() > 0}
-                <table class="pf-v5-c-table">
-                    <thead>
-                        <tr>
-                            <th>Product</th>
-                            <th>Quantity</th>
-                            <th>Unit Price</th>
-                            <th>Subtotal</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {#for item in sale.items}
-                        <tr>
-                            <td>{item.product?.name}</td>
-                            <td>{item.quantity}</td>
-                            <td>${item.unitPrice}</td>
-                            <td><strong>${item.subtotal}</strong></td>
-                        </tr>
-                        {/for}
-                    </tbody>
-                </table>
-                {/if}
-            </div>
+            <dt class="rh-text-secondary">Total Amount</dt>
+            <dd style="font-size: 1.5rem; font-weight: 600; color: var(--rh-color-interactive-primary);">${sale.totalAmount}</dd>
+
+            {#if sale.notes}
+            <dt class="rh-text-secondary">Notes</dt>
+            <dd>{sale.notes}</dd>
+            {/if}
+        </dl>
+    </div>
+    <div class="rh-card__footer">
+        <div class="rh-flex rh-flex--gap-md">
+            {#if sale.status.name() == 'PENDING'}
+            <form method="post" action="/sales/{sale.id}/confirm" style="display: inline;">
+                <button type="submit" class="rh-btn rh-btn--primary">Confirm Order</button>
+            </form>
+            <form method="post" action="/sales/{sale.id}/cancel" style="display: inline;">
+                <button type="submit" class="rh-btn rh-btn--danger">Cancel Order</button>
+            </form>
+            {#else if sale.status.name() == 'CONFIRMED'}
+            <form method="post" action="/sales/{sale.id}/deliver" style="display: inline;">
+                <button type="submit" class="rh-btn rh-btn--primary">Mark as Delivered</button>
+            </form>
+            <form method="post" action="/sales/{sale.id}/cancel" style="display: inline;">
+                <button type="submit" class="rh-btn rh-btn--danger">Cancel Order</button>
+            </form>
+            {/if}
         </div>
-        {/if}
-    </main>
-</body>
-</html>
+    </div>
+</div>
+
+<!-- Items Table -->
+<div class="rh-card rh-mt-xl" style="max-width: 900px;">
+    <div class="rh-card__header">
+        <h2 class="rh-card__title">Order Items</h2>
+    </div>
+    {#if sale.items && sale.items.size() > 0}
+    <table class="rh-table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {#for item in sale.items}
+            <tr>
+                <td><strong>{item.product?.name}</strong></td>
+                <td>{item.quantity}</td>
+                <td>${item.unitPrice}</td>
+                <td style="font-weight: 600; color: var(--rh-color-interactive-primary);">${item.subtotal}</td>
+            </tr>
+            {/for}
+        </tbody>
+    </table>
+    {#else}
+    <div class="rh-empty-state">
+        <h3 class="rh-empty-state__title">No items</h3>
+        <p class="rh-empty-state__body">This sale order has no items.</p>
+    </div>
+    {/if}
+</div>
+{#else}
+<div class="rh-card">
+    <div class="rh-empty-state">
+        <h3 class="rh-empty-state__title">Sale order not found</h3>
+        <p class="rh-empty-state__body">The requested sale order does not exist.</p>
+        <a href="/sales" class="rh-btn rh-btn--primary">Back to Sales</a>
+    </div>
+</div>
+{/if}
+
+{/include}

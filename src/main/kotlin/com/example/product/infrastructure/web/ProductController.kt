@@ -150,51 +150,8 @@ class ProductController(
         return Response.seeOther(URI.create("/products")).build()
     }
 
-    @POST
-    @Path("/products/{id}/stock/add")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    fun addStock(
-        @PathParam("id") id: Long,
-        @FormParam("quantity") quantity: Int,
-        @FormParam("reason") reason: String?
-    ): Response {
-        try {
-            stockService.addStock(id, quantity, reason, "web-user")
-            return Response.seeOther(URI.create("/products/$id")).build()
-        } catch (e: IllegalArgumentException) {
-            return Response.seeOther(URI.create("/products/$id?error=${e.message}")).build()
-        }
-    }
-
-    @POST
-    @Path("/products/{id}/stock/remove")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    fun removeStock(
-        @PathParam("id") id: Long,
-        @FormParam("quantity") quantity: Int,
-        @FormParam("reason") reason: String?
-    ): Response {
-        try {
-            stockService.removeStock(id, quantity, reason, "web-user")
-            return Response.seeOther(URI.create("/products/$id")).build()
-        } catch (e: IllegalArgumentException) {
-            return Response.seeOther(URI.create("/products/$id?error=${e.message}")).build()
-        }
-    }
-
-    @POST
-    @Path("/products/{id}/stock/adjust")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    fun adjustStock(
-        @PathParam("id") id: Long,
-        @FormParam("quantity") quantity: Int,
-        @FormParam("reason") reason: String?
-    ): Response {
-        try {
-            stockService.adjustStock(id, quantity, reason, "web-user")
-            return Response.seeOther(URI.create("/products/$id")).build()
-        } catch (e: IllegalArgumentException) {
-            return Response.seeOther(URI.create("/products/$id?error=${e.message}")).build()
-        }
-    }
+    // Manual stock control endpoints removed - stock is now managed automatically:
+    // - Purchase received → stock IN
+    // - Sale confirmed → stock OUT
+    // For manual adjustments (fixing errors), use the REST API: /api/stock/product/{id}/adjust
 }

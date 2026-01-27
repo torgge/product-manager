@@ -17,7 +17,10 @@
       "Bash(docker compose*)",
       "Bash(.claude/scripts/verify-skills.sh)",
       "Bash(/Users/gbonespirito/Development/product-manager/.claude/scripts/verify-skills.sh:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "WebSearch",
+      "WebFetch(domain:ux.redhat.com)",
+      "WebFetch(domain:red-hat-design-tokens.netlify.app)"
     ],
     "deny": [],
     "ask": []

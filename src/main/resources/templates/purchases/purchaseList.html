@@ -1,108 +1,63 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Purchases - Product Manager</title>
-    <link rel="stylesheet" href="https://unpkg.com/@patternfly/patternfly@5/patternfly.min.css">
-</head>
-<body>
-    <nav class="pf-v5-c-page__header">
-        <div class="pf-v5-c-page__header-brand">
-            <div class="pf-v5-c-page__header-brand-link">
-                <a href="/" class="pf-v5-c-brand">
-                    <h1 style="color: white; margin: 0; font-size: 1.5rem;">Product Manager</h1>
-                </a>
-            </div>
-        </div>
-        <div class="pf-v5-c-page__header-nav">
-            <nav class="pf-v5-c-nav pf-m-horizontal">
-                <ul class="pf-v5-c-nav__list">
-                    <li class="pf-v5-c-nav__item">
-                        <a href="/" class="pf-v5-c-nav__link">Home</a>
-                    </li>
-                    <li class="pf-v5-c-nav__item">
-                        <a href="/products" class="pf-v5-c-nav__link">Products</a>
-                    </li>
-                    <li class="pf-v5-c-nav__item">
-                        <a href="/customers" class="pf-v5-c-nav__link">Customers</a>
-                    </li>
-                    <li class="pf-v5-c-nav__item">
-                        <a href="/suppliers" class="pf-v5-c-nav__link">Suppliers</a>
-                    </li>
-                    <li class="pf-v5-c-nav__item">
-                        <a href="/purchases" class="pf-v5-c-nav__link pf-m-current">Purchases</a>
-                    </li>
-                    <li class="pf-v5-c-nav__item">
-                        <a href="/sales" class="pf-v5-c-nav__link">Sales</a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-    </nav>
+{#include layout/base}
+{#title}Purchases - Product Manager{/title}
 
-    <main class="pf-v5-c-page__main" style="padding: 2rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <h1>Purchase Orders</h1>
-            <a href="/purchases/new" class="pf-v5-c-button pf-m-primary">New Purchase Order</a>
-        </div>
+<div class="rh-page-header">
+    <h1 class="rh-page-header__title">Purchase Orders</h1>
+    <a href="/purchases/new" class="rh-btn rh-btn--primary">New Purchase Order</a>
+</div>
 
-        {#if purchases.isEmpty()}
-        <div class="pf-v5-c-empty-state" style="margin-top: 2rem;">
-            <div class="pf-v5-c-empty-state__content">
-                <h2 class="pf-v5-c-title pf-m-lg">No purchase orders found</h2>
-                <div class="pf-v5-c-empty-state__body">
-                    There are no purchase orders yet. Create your first purchase order to get started.
-                </div>
-                <a href="/purchases/new" class="pf-v5-c-button pf-m-primary">New Purchase Order</a>
-            </div>
+{#if purchases.isEmpty()}
+<div class="rh-card">
+    <div class="rh-empty-state">
+        <div class="rh-empty-state__icon">
+            <svg width="64" height="64" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+            </svg>
         </div>
-        {#else}
-        <table class="pf-v5-c-table" style="margin-top: 1rem;">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Supplier</th>
-                    <th>Date</th>
-                    <th>Total Amount</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {#for purchase in purchases}
-                <tr>
-                    <td><strong>#{purchase.id}</strong></td>
-                    <td>{purchase.supplier?.name}</td>
-                    <td>{purchase.orderDate}</td>
-                    <td>${purchase.totalAmount}</td>
-                    <td>
-                        {#if purchase.status.name() == 'PENDING'}
-                        <span class="pf-v5-c-label pf-m-orange">
-                            <span class="pf-v5-c-label__content">Pending</span>
-                        </span>
-                        {#else if purchase.status.name() == 'CONFIRMED'}
-                        <span class="pf-v5-c-label pf-m-blue">
-                            <span class="pf-v5-c-label__content">Confirmed</span>
-                        </span>
-                        {#else if purchase.status.name() == 'RECEIVED'}
-                        <span class="pf-v5-c-label pf-m-green">
-                            <span class="pf-v5-c-label__content">Received</span>
-                        </span>
-                        {#else}
-                        <span class="pf-v5-c-label pf-m-red">
-                            <span class="pf-v5-c-label__content">Cancelled</span>
-                        </span>
-                        {/if}
-                    </td>
-                    <td>
-                        <a href="/purchases/{purchase.id}" class="pf-v5-c-button pf-m-small pf-m-secondary">View Details</a>
-                    </td>
-                </tr>
-                {/for}
-            </tbody>
-        </table>
-        {/if}
-    </main>
-</body>
-</html>
+        <h3 class="rh-empty-state__title">No purchase orders found</h3>
+        <p class="rh-empty-state__body">There are no purchase orders yet. Create your first purchase order to get started.</p>
+        <a href="/purchases/new" class="rh-btn rh-btn--primary">New Purchase Order</a>
+    </div>
+</div>
+{#else}
+<div class="rh-card">
+    <table class="rh-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Supplier</th>
+                <th>Date</th>
+                <th>Total Amount</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {#for purchase in purchases}
+            <tr>
+                <td><strong>#{purchase.id}</strong></td>
+                <td>{purchase.supplier?.name}</td>
+                <td>{purchase.orderDate}</td>
+                <td style="font-weight: 600; color: var(--rh-color-interactive-primary);">${purchase.totalAmount}</td>
+                <td>
+                    {#if purchase.status.name() == 'PENDING'}
+                    <span class="rh-label rh-label--warning">Pending</span>
+                    {#else if purchase.status.name() == 'CONFIRMED'}
+                    <span class="rh-label rh-label--info">Confirmed</span>
+                    {#else if purchase.status.name() == 'RECEIVED'}
+                    <span class="rh-label rh-label--success">Received</span>
+                    {#else}
+                    <span class="rh-label rh-label--danger">Cancelled</span>
+                    {/if}
+                </td>
+                <td>
+                    <a href="/purchases/{purchase.id}" class="rh-btn rh-btn--secondary rh-btn--sm">View Details</a>
+                </td>
+            </tr>
+            {/for}
+        </tbody>
+    </table>
+</div>
+{/if}
+
+{/include}
