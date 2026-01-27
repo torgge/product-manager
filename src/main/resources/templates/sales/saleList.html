@@ -36,7 +36,7 @@
             {#for sale in sales}
             <tr>
                 <td><strong>#{sale.id}</strong></td>
-                <td>{sale.customer?.name}</td>
+                <td>{sale.customer.name}</td>
                 <td>{sale.orderDate}</td>
                 <td style="font-weight: 600; color: var(--rh-color-interactive-primary);">${sale.totalAmount}</td>
                 <td>
