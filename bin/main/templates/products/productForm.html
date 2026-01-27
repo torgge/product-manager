@@ -1,0 +1,55 @@
+{#include layout/base}
+{#title}{#if action == 'create'}New Product{#else}Edit Product{/if} - Product Manager{/title}
+
+<a href="/products" class="rh-btn rh-btn--link rh-mb-lg" style="display: inline-block;">&larr; Back to Products</a>
+
+<div class="rh-card" style="max-width: 600px;">
+    <div class="rh-card__header">
+        <h1 class="rh-card__title">{#if action == 'create'}Add New Product{#else}Edit Product{/if}</h1>
+    </div>
+    <div class="rh-card__body">
+        <form method="post" action="{#if action == 'create'}/products{#else}/products/{product.id}{/if}">
+            <div class="rh-form-group">
+                <label class="rh-form-label rh-form-label--required" for="name">Name</label>
+                <input class="rh-form-control" type="text" id="name" name="name" value="{product.name}" required>
+            </div>
+
+            <div class="rh-form-group">
+                <label class="rh-form-label" for="description">Description</label>
+                <textarea class="rh-form-control" id="description" name="description" rows="3">{product.description}</textarea>
+            </div>
+
+            <div class="rh-form-group">
+                <label class="rh-form-label" for="category">Category</label>
+                <input class="rh-form-control" type="text" id="category" name="category" value="{product.category}" placeholder="e.g., Electronics, Clothing, Food">
+            </div>
+
+            <div class="rh-form-group">
+                <label class="rh-form-label" for="purchasePrice">Purchase Price</label>
+                <input class="rh-form-control" type="number" id="purchasePrice" name="purchasePrice" value="{product.purchasePrice}" step="0.01" min="0">
+                <p class="rh-form-helper">Cost price paid to supplier</p>
+            </div>
+
+            <div class="rh-form-group">
+                <label class="rh-form-label" for="profitMargin">Profit Margin (%)</label>
+                <input class="rh-form-control" type="number" id="profitMargin" name="profitMargin" value="{product.profitMargin}" step="0.01" min="0">
+                <p class="rh-form-helper">Percentage added to purchase price for sale price calculation</p>
+            </div>
+
+            <div class="rh-form-group">
+                <label class="rh-form-label rh-form-label--required" for="price">Sale Price</label>
+                <input class="rh-form-control" type="number" id="price" name="price" value="{product.price}" step="0.01" min="0" required>
+                <p class="rh-form-helper">Final price for customers</p>
+            </div>
+
+            <div class="rh-flex rh-flex--gap-md rh-mt-lg">
+                <button type="submit" class="rh-btn rh-btn--primary">
+                    {#if action == 'create'}Create Product{#else}Update Product{/if}
+                </button>
+                <a href="/products" class="rh-btn rh-btn--link">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{/include}

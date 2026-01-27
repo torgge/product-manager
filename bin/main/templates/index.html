@@ -1,0 +1,33 @@
+{#include layout/base}
+{#title}Home - Product Manager{/title}
+
+<div class="rh-page-header">
+    <h1 class="rh-page-header__title">Dashboard</h1>
+</div>
+
+<div class="rh-stats-grid">
+    <div class="rh-stat-card">
+        <div class="rh-stat-card__label">Total Products</div>
+        <div class="rh-stat-card__value">{totalProducts}</div>
+    </div>
+    <div class="rh-stat-card">
+        <div class="rh-stat-card__label">Available Products</div>
+        <div class="rh-stat-card__value">{availableProducts}</div>
+    </div>
+</div>
+
+<div class="rh-card">
+    <div class="rh-card__header">
+        <h2 class="rh-card__title">Quick Actions</h2>
+    </div>
+    <div class="rh-card__body">
+        <div class="rh-flex rh-flex--gap-md">
+            <a href="/products" class="rh-btn rh-btn--primary">View All Products</a>
+            <a href="/products/new" class="rh-btn rh-btn--secondary">Add New Product</a>
+            <a href="/customers" class="rh-btn rh-btn--secondary">Manage Customers</a>
+            <a href="/suppliers" class="rh-btn rh-btn--secondary">Manage Suppliers</a>
+        </div>
+    </div>
+</div>
+
+{/include}

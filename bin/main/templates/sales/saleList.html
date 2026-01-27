@@ -1,0 +1,63 @@
+{#include layout/base}
+{#title}Sales - Product Manager{/title}
+
+<div class="rh-page-header">
+    <h1 class="rh-page-header__title">Sale Orders</h1>
+    <a href="/sales/new" class="rh-btn rh-btn--primary">New Sale Order</a>
+</div>
+
+{#if sales.isEmpty()}
+<div class="rh-card">
+    <div class="rh-empty-state">
+        <div class="rh-empty-state__icon">
+            <svg width="64" height="64" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+            </svg>
+        </div>
+        <h3 class="rh-empty-state__title">No sale orders found</h3>
+        <p class="rh-empty-state__body">There are no sale orders yet. Create your first sale order to get started.</p>
+        <a href="/sales/new" class="rh-btn rh-btn--primary">New Sale Order</a>
+    </div>
+</div>
+{#else}
+<div class="rh-card">
+    <table class="rh-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Customer</th>
+                <th>Date</th>
+                <th>Total Amount</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {#for sale in sales}
+            <tr>
+                <td><strong>#{sale.id}</strong></td>
+                <td>{sale.customer?.name}</td>
+                <td>{sale.orderDate}</td>
+                <td style="font-weight: 600; color: var(--rh-color-interactive-primary);">${sale.totalAmount}</td>
+                <td>
+                    {#if sale.status.name() == 'PENDING'}
+                    <span class="rh-label rh-label--warning">Pending</span>
+                    {#else if sale.status.name() == 'CONFIRMED'}
+                    <span class="rh-label rh-label--info">Confirmed</span>
+                    {#else if sale.status.name() == 'RECEIVED'}
+                    <span class="rh-label rh-label--success">Delivered</span>
+                    {#else}
+                    <span class="rh-label rh-label--danger">Cancelled</span>
+                    {/if}
+                </td>
+                <td>
+                    <a href="/sales/{sale.id}" class="rh-btn rh-btn--secondary rh-btn--sm">View Details</a>
+                </td>
+            </tr>
+            {/for}
+        </tbody>
+    </table>
+</div>
+{/if}
+
+{/include}

@@ -1,0 +1,56 @@
+{#include layout/base}
+{#title}Customers - Product Manager{/title}
+
+<div class="rh-page-header">
+    <h1 class="rh-page-header__title">Customers</h1>
+    <a href="/customers/new" class="rh-btn rh-btn--primary">Add Customer</a>
+</div>
+
+{#if customers.isEmpty()}
+<div class="rh-card">
+    <div class="rh-empty-state">
+        <div class="rh-empty-state__icon">
+            <svg width="64" height="64" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+        </div>
+        <h3 class="rh-empty-state__title">No customers found</h3>
+        <p class="rh-empty-state__body">There are no customers yet. Add your first customer to get started.</p>
+        <a href="/customers/new" class="rh-btn rh-btn--primary">Add Customer</a>
+    </div>
+</div>
+{#else}
+<div class="rh-card">
+    <table class="rh-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Document</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {#for customer in customers}
+            <tr>
+                <td><strong>{customer.name}</strong></td>
+                <td>{customer.document}</td>
+                <td>{customer.email ?: '-'}</td>
+                <td>{customer.phone ?: '-'}</td>
+                <td>
+                    <div class="rh-flex rh-flex--gap-sm">
+                        <a href="/customers/{customer.id}/edit" class="rh-btn rh-btn--secondary rh-btn--sm">Edit</a>
+                        <form method="post" action="/customers/{customer.id}/delete" style="display: inline;">
+                            <button type="submit" class="rh-btn rh-btn--danger rh-btn--sm" onclick="return confirm('Are you sure?')">Delete</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {/for}
+        </tbody>
+    </table>
+</div>
+{/if}
+
+{/include}

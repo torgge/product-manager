@@ -1,0 +1,223 @@
+{#include layout/base}
+{#title}New Sale Order - Product Manager{/title}
+
+<a href="/sales" class="rh-btn rh-btn--link rh-mb-lg" style="display: inline-block;">&larr; Back to Sales</a>
+
+{#if customers.isEmpty()}
+<div class="rh-alert rh-alert--warning" style="max-width: 900px;">
+    <strong>No customers found</strong>
+    <p>Please <a href="/customers/new">create a customer</a> first before creating sale orders.</p>
+</div>
+{#else if products.isEmpty()}
+<div class="rh-alert rh-alert--warning" style="max-width: 900px;">
+    <strong>No products found</strong>
+    <p>Please <a href="/products/new">create a product</a> first before creating sale orders.</p>
+</div>
+{#else}
+<div class="rh-card" style="max-width: 1200px;">
+    <div class="rh-card__header">
+        <h1 class="rh-card__title">New Sale Order</h1>
+    </div>
+    <div class="rh-card__body">
+        <form id="saleForm">
+            <div class="rh-form-group">
+                <label class="rh-form-label rh-form-label--required" for="customerId">Customer</label>
+                <select class="rh-form-control" id="customerId" name="customerId" required>
+                    <option value="">Select a customer...</option>
+                    {#for customer in customers}
+                    <option value="{customer.id}">{customer.name} - {customer.document}</option>
+                    {/for}
+                </select>
+            </div>
+
+            <div class="rh-form-group">
+                <label class="rh-form-label rh-form-label--required">Items</label>
+                <table class="rh-table" id="itemsTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 40%;">Product</th>
+                            <th style="width: 15%;">Quantity</th>
+                            <th style="width: 20%;">Unit Price</th>
+                            <th style="width: 20%;">Subtotal</th>
+                            <th style="width: 5%;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="itemsBody">
+                    </tbody>
+                </table>
+                <button type="button" class="rh-btn rh-btn--secondary rh-btn--sm rh-mt-md" id="addItemBtn">
+                    + Add Item
+                </button>
+            </div>
+
+            <div class="rh-form-group rh-mt-lg">
+                <label class="rh-form-label">Total Amount</label>
+                <div id="totalAmount" style="font-size: 1.5rem; font-weight: 700; color: var(--rh-color-interactive-primary);">$0.00</div>
+            </div>
+
+            <div class="rh-form-group">
+                <label class="rh-form-label" for="notes">Notes</label>
+                <textarea class="rh-form-control" id="notes" name="notes" rows="3" placeholder="Additional notes..."></textarea>
+            </div>
+
+            <div class="rh-flex rh-flex--gap-md rh-mt-lg">
+                <button type="submit" class="rh-btn rh-btn--primary">Create Sale Order</button>
+                <a href="/sales" class="rh-btn rh-btn--link">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{/if}
+
+<script>
+    let products = [];
+    let itemCounter = 0;
+
+    document.addEventListener('DOMContentLoaded', async function() {
+        try {
+            const response = await fetch('/api/products');
+            if (response.ok) {
+                products = await response.json();
+            }
+        } catch (e) {
+            console.error('Failed to load products', e);
+        }
+
+        addItem();
+        document.getElementById('addItemBtn').addEventListener('click', addItem);
+        document.getElementById('saleForm').addEventListener('submit', handleSubmit);
+    });
+
+    function addItem() {
+        itemCounter++;
+        const tbody = document.getElementById('itemsBody');
+        const row = document.createElement('tr');
+        row.id = 'item-' + itemCounter;
+
+        let productOptions = '<option value="">Select product...</option>';
+        products.forEach(p => {
+            productOptions += '<option value="' + p.id + '" data-price="' + p.price + '">' + p.name + '</option>';
+        });
+
+        row.innerHTML =
+            '<td>' +
+                '<select class="rh-form-control item-product" name="items[' + itemCounter + '].productId" required onchange="updateSubtotal(' + itemCounter + ')">' +
+                    productOptions +
+                '</select>' +
+            '</td>' +
+            '<td>' +
+                '<input type="number" class="rh-form-control item-quantity" name="items[' + itemCounter + '].quantity" min="1" value="1" required oninput="updateSubtotal(' + itemCounter + ')">' +
+            '</td>' +
+            '<td>' +
+                '<input type="number" class="rh-form-control item-price" name="items[' + itemCounter + '].unitPrice" step="0.01" min="0" required oninput="updateSubtotal(' + itemCounter + ')">' +
+            '</td>' +
+            '<td>' +
+                '<strong class="item-subtotal" id="subtotal-' + itemCounter + '">$0.00</strong>' +
+            '</td>' +
+            '<td>' +
+                '<button type="button" class="rh-btn rh-btn--danger rh-btn--sm" onclick="removeItem(' + itemCounter + ')" title="Remove item">&times;</button>' +
+            '</td>';
+
+        tbody.appendChild(row);
+    }
+
+    function removeItem(id) {
+        const row = document.getElementById('item-' + id);
+        if (row) {
+            row.remove();
+            updateTotal();
+        }
+    }
+
+    function updateSubtotal(id) {
+        const row = document.getElementById('item-' + id);
+        if (!row) return;
+
+        const productSelect = row.querySelector('.item-product');
+        const quantityInput = row.querySelector('.item-quantity');
+        const priceInput = row.querySelector('.item-price');
+        const subtotalSpan = row.querySelector('.item-subtotal');
+
+        if (productSelect.value && !priceInput.value) {
+            const selectedOption = productSelect.options[productSelect.selectedIndex];
+            const productPrice = selectedOption.getAttribute('data-price');
+            if (productPrice) {
+                priceInput.value = parseFloat(productPrice).toFixed(2);
+            }
+        }
+
+        const quantity = parseFloat(quantityInput.value) || 0;
+        const price = parseFloat(priceInput.value) || 0;
+        const subtotal = quantity * price;
+
+        subtotalSpan.textContent = '$' + subtotal.toFixed(2);
+        updateTotal();
+    }
+
+    function updateTotal() {
+        let total = 0;
+        document.querySelectorAll('.item-subtotal').forEach(span => {
+            const value = parseFloat(span.textContent.replace('$', '')) || 0;
+            total += value;
+        });
+        document.getElementById('totalAmount').textContent = '$' + total.toFixed(2);
+    }
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+
+        const formData = new FormData(e.target);
+        const customerId = formData.get('customerId');
+        const notes = formData.get('notes');
+
+        const items = [];
+        const rows = document.querySelectorAll('#itemsBody tr');
+
+        rows.forEach(row => {
+            const productSelect = row.querySelector('.item-product');
+            const quantity = row.querySelector('.item-quantity').value;
+            const unitPrice = row.querySelector('.item-price').value;
+
+            if (productSelect.value && quantity && unitPrice) {
+                items.push({
+                    productId: parseInt(productSelect.value),
+                    quantity: parseInt(quantity),
+                    unitPrice: parseFloat(unitPrice)
+                });
+            }
+        });
+
+        if (items.length === 0) {
+            alert('Please add at least one item to the sale order.');
+            return;
+        }
+
+        const saleData = {
+            customerId: parseInt(customerId),
+            items: items,
+            notes: notes || null
+        };
+
+        try {
+            const response = await fetch('/api/sales', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(saleData)
+            });
+
+            if (response.ok) {
+                const sale = await response.json();
+                window.location.href = '/sales/' + sale.id;
+            } else {
+                const error = await response.text();
+                alert('Error creating sale order: ' + error);
+            }
+        } catch (error) {
+            alert('Error creating sale order: ' + error.message);
+        }
+    }
+</script>
+
+{/include}

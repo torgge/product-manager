@@ -1,0 +1,134 @@
+{#include layout/base}
+{#title}{product.name} - Product Manager{/title}
+
+<a href="/products" class="rh-btn rh-btn--link rh-mb-lg" style="display: inline-block;">&larr; Back to Products</a>
+
+{#if product}
+<div class="rh-card" style="max-width: 800px;">
+    <div class="rh-card__header">
+        <h1 class="rh-card__title">{product.name}</h1>
+    </div>
+    <div class="rh-card__body">
+        <dl style="display: grid; grid-template-columns: 1fr 2fr; gap: var(--rh-space-md);">
+            <dt class="rh-text-secondary">ID</dt>
+            <dd>{product.id}</dd>
+
+            <dt class="rh-text-secondary">Description</dt>
+            <dd>
+                {#if product.description}
+                {product.description}
+                {#else}
+                <span class="rh-text-secondary">No description provided</span>
+                {/if}
+            </dd>
+
+            <dt class="rh-text-secondary">Category</dt>
+            <dd>
+                {#if product.category}
+                <span class="rh-label rh-label--info">{product.category}</span>
+                {#else}
+                <span class="rh-text-secondary">No category</span>
+                {/if}
+            </dd>
+
+            <dt class="rh-text-secondary">Price</dt>
+            <dd style="font-size: 1.5rem; font-weight: 600; color: var(--rh-color-interactive-primary);">${product.price}</dd>
+
+            <dt class="rh-text-secondary">Current Stock</dt>
+            <dd>
+                {#if currentStock > 0}
+                <span class="rh-label rh-label--success">{currentStock} units available</span>
+                {#else}
+                <span class="rh-label rh-label--danger">Out of stock</span>
+                {/if}
+            </dd>
+        </dl>
+    </div>
+    <div class="rh-card__footer">
+        <div class="rh-flex rh-flex--gap-md">
+            <a href="/products/{product.id}/edit" class="rh-btn rh-btn--primary">Edit Product</a>
+            <form method="post" action="/products/{product.id}/delete" style="display: inline;">
+                <button type="submit" class="rh-btn rh-btn--danger" onclick="return confirm('Are you sure you want to delete this product?')">Delete Product</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- Stock Movement History -->
+<div class="rh-card rh-mt-xl" style="max-width: 800px;">
+    <div class="rh-card__header">
+        <h2 class="rh-card__title">Stock Movement History</h2>
+    </div>
+    <div class="rh-alert rh-alert--info" style="margin: var(--rh-space-md); margin-bottom: 0;">
+        <strong>Automatic Stock Management</strong>
+        <p style="margin: var(--rh-space-xs) 0 0 0;">Stock is automatically updated when purchase orders are received (IN) or sales are confirmed (OUT).</p>
+    </div>
+    {#if stockMovements && stockMovements.size() > 0}
+    <table class="rh-table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Quantity</th>
+                <th>Balance</th>
+                <th>Reason</th>
+            </tr>
+        </thead>
+        <tbody>
+            {#for movement in stockMovements}
+            <tr>
+                <td>{movement.createdAt}</td>
+                <td>
+                    {#if movement.type.name() == 'IN'}
+                    <span class="rh-label rh-label--success">IN</span>
+                    {#else if movement.type.name() == 'OUT'}
+                    <span class="rh-label rh-label--danger">OUT</span>
+                    {#else}
+                    <span class="rh-label rh-label--warning">ADJUSTMENT</span>
+                    {/if}
+                </td>
+                <td>
+                    {#if movement.type.name() == 'IN'}
+                    <strong style="color: var(--rh-color-status-success);">+{movement.quantity}</strong>
+                    {#else if movement.type.name() == 'OUT'}
+                    <strong style="color: var(--rh-color-status-danger);">-{movement.quantity}</strong>
+                    {#else}
+                    <strong>{movement.quantity}</strong>
+                    {/if}
+                </td>
+                <td><strong>{movement.balanceAfter}</strong></td>
+                <td>
+                    {#if movement.reason}
+                    {movement.reason}
+                    {#else}
+                    <span class="rh-text-secondary" style="font-style: italic;">-</span>
+                    {/if}
+                </td>
+            </tr>
+            {/for}
+        </tbody>
+    </table>
+    {#else}
+    <div class="rh-empty-state">
+        <div class="rh-empty-state__icon">
+            <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+            </svg>
+        </div>
+        <h3 class="rh-empty-state__title">No stock movements yet</h3>
+        <p class="rh-empty-state__body">Stock will be updated automatically when purchase orders are received or sales are confirmed.</p>
+    </div>
+    {/if}
+</div>
+{#else}
+<div class="rh-card">
+    <div class="rh-empty-state">
+        <h3 class="rh-empty-state__title">Product not found</h3>
+        <p class="rh-empty-state__body">The requested product does not exist.</p>
+        <a href="/products" class="rh-btn rh-btn--primary">Back to Products</a>
+    </div>
+</div>
+{/if}
+
+{/include}

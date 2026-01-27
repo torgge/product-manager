@@ -1,0 +1,105 @@
+{#include layout/base}
+{#title}Purchase Order #{purchase.id} - Product Manager{/title}
+
+<a href="/purchases" class="rh-btn rh-btn--link rh-mb-lg" style="display: inline-block;">&larr; Back to Purchases</a>
+
+{#if purchase}
+<div class="rh-card" style="max-width: 900px;">
+    <div class="rh-card__header">
+        <h1 class="rh-card__title">Purchase Order #{purchase.id}</h1>
+    </div>
+    <div class="rh-card__body">
+        <dl style="display: grid; grid-template-columns: 1fr 2fr; gap: var(--rh-space-md);">
+            <dt class="rh-text-secondary">Supplier</dt>
+            <dd>{purchase.supplier?.name}</dd>
+
+            <dt class="rh-text-secondary">Order Date</dt>
+            <dd>{purchase.orderDate}</dd>
+
+            <dt class="rh-text-secondary">Status</dt>
+            <dd>
+                {#if purchase.status.name() == 'PENDING'}
+                <span class="rh-label rh-label--warning">Pending</span>
+                {#else if purchase.status.name() == 'CONFIRMED'}
+                <span class="rh-label rh-label--info">Confirmed</span>
+                {#else if purchase.status.name() == 'RECEIVED'}
+                <span class="rh-label rh-label--success">Received</span>
+                {#else}
+                <span class="rh-label rh-label--danger">Cancelled</span>
+                {/if}
+            </dd>
+
+            <dt class="rh-text-secondary">Total Amount</dt>
+            <dd style="font-size: 1.5rem; font-weight: 600; color: var(--rh-color-interactive-primary);">${purchase.totalAmount}</dd>
+
+            {#if purchase.notes}
+            <dt class="rh-text-secondary">Notes</dt>
+            <dd>{purchase.notes}</dd>
+            {/if}
+        </dl>
+    </div>
+    <div class="rh-card__footer">
+        <div class="rh-flex rh-flex--gap-md">
+            {#if purchase.status.name() == 'PENDING'}
+            <form method="post" action="/purchases/{purchase.id}/confirm" style="display: inline;">
+                <button type="submit" class="rh-btn rh-btn--primary">Confirm Order</button>
+            </form>
+            <form method="post" action="/purchases/{purchase.id}/cancel" style="display: inline;">
+                <button type="submit" class="rh-btn rh-btn--danger">Cancel Order</button>
+            </form>
+            {#else if purchase.status.name() == 'CONFIRMED'}
+            <form method="post" action="/purchases/{purchase.id}/receive" style="display: inline;">
+                <button type="submit" class="rh-btn rh-btn--primary">Receive Order</button>
+            </form>
+            <form method="post" action="/purchases/{purchase.id}/cancel" style="display: inline;">
+                <button type="submit" class="rh-btn rh-btn--danger">Cancel Order</button>
+            </form>
+            {/if}
+        </div>
+    </div>
+</div>
+
+<!-- Items Table -->
+<div class="rh-card rh-mt-xl" style="max-width: 900px;">
+    <div class="rh-card__header">
+        <h2 class="rh-card__title">Order Items</h2>
+    </div>
+    {#if purchase.items && purchase.items.size() > 0}
+    <table class="rh-table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {#for item in purchase.items}
+            <tr>
+                <td><strong>{item.product?.name}</strong></td>
+                <td>{item.quantity}</td>
+                <td>${item.unitPrice}</td>
+                <td style="font-weight: 600; color: var(--rh-color-interactive-primary);">${item.subtotal}</td>
+            </tr>
+            {/for}
+        </tbody>
+    </table>
+    {#else}
+    <div class="rh-empty-state">
+        <h3 class="rh-empty-state__title">No items</h3>
+        <p class="rh-empty-state__body">This purchase order has no items.</p>
+    </div>
+    {/if}
+</div>
+{#else}
+<div class="rh-card">
+    <div class="rh-empty-state">
+        <h3 class="rh-empty-state__title">Purchase order not found</h3>
+        <p class="rh-empty-state__body">The requested purchase order does not exist.</p>
+        <a href="/purchases" class="rh-btn rh-btn--primary">Back to Purchases</a>
+    </div>
+</div>
+{/if}
+
+{/include}

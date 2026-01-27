@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{title ?: 'Product Manager'}</title>
+    <link rel="stylesheet" href="https://unpkg.com/@patternfly/patternfly@6/patternfly.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;600;700&family=Red+Hat+Text:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Red Hat Design System Tokens */
+        :root {
+            /* Brand Colors */
+            --rh-color-brand-red: #ee0000;
+            --rh-color-brand-red-dark: #a60000;
+            --rh-color-brand-red-light: #f56e6e;
+
+            /* Interactive Colors */
+            --rh-color-interactive-primary: #0066cc;
+            --rh-color-interactive-primary-hover: #003366;
+
+            /* Surface Colors */
+            --rh-color-surface-lightest: #ffffff;
+            --rh-color-surface-lighter: #f2f2f2;
+            --rh-color-surface-light: #e0e0e0;
+            --rh-color-surface-dark: #383838;
+            --rh-color-surface-darker: #1f1f1f;
+            --rh-color-surface-darkest: #151515;
+
+            /* Text Colors */
+            --rh-color-text-primary: #151515;
+            --rh-color-text-secondary: #4d4d4d;
+
+            /* Status Colors */
+            --rh-color-status-success: #3d7317;
+            --rh-color-status-danger: #b1380b;
+            --rh-color-status-warning: #f0ab00;
+            --rh-color-status-info: #0066cc;
+
+            /* Spacing */
+            --rh-space-xs: 0.25rem;
+            --rh-space-sm: 0.5rem;
+            --rh-space-md: 1rem;
+            --rh-space-lg: 1.5rem;
+            --rh-space-xl: 2rem;
+            --rh-space-2xl: 3rem;
+
+            /* Border Radius */
+            --rh-border-radius-sm: 3px;
+            --rh-border-radius-md: 8px;
+            --rh-border-radius-lg: 16px;
+
+            /* Shadows */
+            --rh-box-shadow-sm: 0 2px 4px rgba(0,0,0,0.08);
+            --rh-box-shadow-md: 0 4px 8px rgba(0,0,0,0.12);
+            --rh-box-shadow-lg: 0 8px 16px rgba(0,0,0,0.16);
+        }
+
+        /* Typography */
+        body {
+            font-family: 'Red Hat Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--rh-color-surface-lighter);
+            color: var(--rh-color-text-primary);
+            margin: 0;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Red Hat Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-weight: 600;
+            color: var(--rh-color-text-primary);
+            margin: 0 0 var(--rh-space-md) 0;
+        }
+
+        /* Header */
+        .rh-header {
+            background: var(--rh-color-surface-darkest);
+            color: white;
+            padding: 0 var(--rh-space-xl);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .rh-header__brand {
+            display: flex;
+            align-items: center;
+            gap: var(--rh-space-sm);
+        }
+
+        .rh-header__brand-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--rh-color-brand-red);
+            border-radius: var(--rh-border-radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .rh-header__brand-text {
+            font-family: 'Red Hat Display', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: white;
+            text-decoration: none;
+        }
+
+        .rh-header__brand-text:hover {
+            color: var(--rh-color-surface-light);
+        }
+
+        /* Navigation */
+        .rh-nav {
+            display: flex;
+            gap: var(--rh-space-xs);
+        }
+
+        .rh-nav__link {
+            color: var(--rh-color-surface-light);
+            text-decoration: none;
+            padding: var(--rh-space-sm) var(--rh-space-md);
+            border-radius: var(--rh-border-radius-sm);
+            font-weight: 500;
+            font-size: 0.9375rem;
+            transition: all 0.15s ease;
+        }
+
+        .rh-nav__link:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .rh-nav__link--active {
+            color: white;
+            background: rgba(255,255,255,0.15);
+            border-bottom: 2px solid var(--rh-color-brand-red);
+        }
+
+        /* Page Layout */
+        .rh-page {
+            min-height: calc(100vh - 60px - 60px);
+            padding: var(--rh-space-xl);
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Cards */
+        .rh-card {
+            background: var(--rh-color-surface-lightest);
+            border-radius: var(--rh-border-radius-md);
+            box-shadow: var(--rh-box-shadow-sm);
+            overflow: hidden;
+        }
+
+        .rh-card__header {
+            padding: var(--rh-space-lg);
+            border-bottom: 1px solid var(--rh-color-surface-light);
+        }
+
+        .rh-card__title {
+            margin: 0;
+            font-size: 1.25rem;
+        }
+
+        .rh-card__body {
+            padding: var(--rh-space-lg);
+        }
+
+        .rh-card__footer {
+            padding: var(--rh-space-lg);
+            border-top: 1px solid var(--rh-color-surface-light);
+            background: var(--rh-color-surface-lighter);
+        }
+
+        /* Buttons */
+        .rh-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--rh-space-sm);
+            padding: var(--rh-space-sm) var(--rh-space-md);
+            font-family: 'Red Hat Text', sans-serif;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            border-radius: var(--rh-border-radius-sm);
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+
+        .rh-btn--primary {
+            background: var(--rh-color-interactive-primary);
+            color: white;
+        }
+
+        .rh-btn--primary:hover {
+            background: var(--rh-color-interactive-primary-hover);
+        }
+
+        .rh-btn--secondary {
+            background: transparent;
+            color: var(--rh-color-interactive-primary);
+            border: 1px solid var(--rh-color-interactive-primary);
+        }
+
+        .rh-btn--secondary:hover {
+            background: rgba(0,102,204,0.1);
+        }
+
+        .rh-btn--danger {
+            background: var(--rh-color-status-danger);
+            color: white;
+        }
+
+        .rh-btn--danger:hover {
+            background: #8c2d09;
+        }
+
+        .rh-btn--link {
+            background: transparent;
+            color: var(--rh-color-interactive-primary);
+            padding: var(--rh-space-xs) var(--rh-space-sm);
+        }
+
+        .rh-btn--link:hover {
+            text-decoration: underline;
+        }
+
+        .rh-btn--sm {
+            padding: var(--rh-space-xs) var(--rh-space-sm);
+            font-size: 0.875rem;
+        }
+
+        /* Tables */
+        .rh-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--rh-color-surface-lightest);
+        }
+
+        .rh-table th {
+            text-align: left;
+            padding: var(--rh-space-md);
+            background: var(--rh-color-surface-lighter);
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--rh-color-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            border-bottom: 2px solid var(--rh-color-surface-light);
+        }
+
+        .rh-table td {
+            padding: var(--rh-space-md);
+            border-bottom: 1px solid var(--rh-color-surface-light);
+            vertical-align: middle;
+        }
+
+        .rh-table tbody tr:hover {
+            background: var(--rh-color-surface-lighter);
+        }
+
+        /* Forms */
+        .rh-form-group {
+            margin-bottom: var(--rh-space-lg);
+        }
+
+        .rh-form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: var(--rh-space-xs);
+            color: var(--rh-color-text-primary);
+        }
+
+        .rh-form-label--required::after {
+            content: ' *';
+            color: var(--rh-color-status-danger);
+        }
+
+        .rh-form-control {
+            width: 100%;
+            padding: var(--rh-space-sm) var(--rh-space-md);
+            font-family: 'Red Hat Text', sans-serif;
+            font-size: 1rem;
+            border: 1px solid var(--rh-color-surface-light);
+            border-radius: var(--rh-border-radius-sm);
+            background: var(--rh-color-surface-lightest);
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+            box-sizing: border-box;
+        }
+
+        .rh-form-control:focus {
+            outline: none;
+            border-color: var(--rh-color-interactive-primary);
+            box-shadow: 0 0 0 2px rgba(0,102,204,0.2);
+        }
+
+        .rh-form-helper {
+            font-size: 0.875rem;
+            color: var(--rh-color-text-secondary);
+            margin-top: var(--rh-space-xs);
+        }
+
+        /* Labels/Badges */
+        .rh-label {
+            display: inline-flex;
+            align-items: center;
+            padding: var(--rh-space-xs) var(--rh-space-sm);
+            font-size: 0.75rem;
+            font-weight: 500;
+            border-radius: var(--rh-border-radius-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        .rh-label--success {
+            background: #e7f4e4;
+            color: var(--rh-color-status-success);
+        }
+
+        .rh-label--danger {
+            background: #fce8e6;
+            color: var(--rh-color-status-danger);
+        }
+
+        .rh-label--info {
+            background: #e5f1fa;
+            color: var(--rh-color-status-info);
+        }
+
+        .rh-label--warning {
+            background: #fef6e5;
+            color: #915700;
+        }
+
+        .rh-label--neutral {
+            background: var(--rh-color-surface-lighter);
+            color: var(--rh-color-text-secondary);
+        }
+
+        /* Empty State */
+        .rh-empty-state {
+            text-align: center;
+            padding: var(--rh-space-2xl);
+        }
+
+        .rh-empty-state__icon {
+            font-size: 3rem;
+            color: var(--rh-color-surface-light);
+            margin-bottom: var(--rh-space-md);
+        }
+
+        .rh-empty-state__title {
+            font-size: 1.25rem;
+            margin-bottom: var(--rh-space-sm);
+        }
+
+        .rh-empty-state__body {
+            color: var(--rh-color-text-secondary);
+            margin-bottom: var(--rh-space-lg);
+        }
+
+        /* Alert */
+        .rh-alert {
+            padding: var(--rh-space-md);
+            border-radius: var(--rh-border-radius-sm);
+            border-left: 4px solid;
+            margin-bottom: var(--rh-space-lg);
+        }
+
+        .rh-alert--info {
+            background: #e5f1fa;
+            border-color: var(--rh-color-status-info);
+        }
+
+        .rh-alert--warning {
+            background: #fef6e5;
+            border-color: var(--rh-color-status-warning);
+        }
+
+        .rh-alert--danger {
+            background: #fce8e6;
+            border-color: var(--rh-color-status-danger);
+        }
+
+        .rh-alert--success {
+            background: #e7f4e4;
+            border-color: var(--rh-color-status-success);
+        }
+
+        .rh-alert__title {
+            font-weight: 600;
+            margin-bottom: var(--rh-space-xs);
+        }
+
+        /* Page Header */
+        .rh-page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--rh-space-xl);
+        }
+
+        .rh-page-header__title {
+            margin: 0;
+            font-size: 1.75rem;
+        }
+
+        /* Stats Grid */
+        .rh-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--rh-space-lg);
+            margin-bottom: var(--rh-space-xl);
+        }
+
+        .rh-stat-card {
+            background: var(--rh-color-surface-lightest);
+            border-radius: var(--rh-border-radius-md);
+            padding: var(--rh-space-lg);
+            box-shadow: var(--rh-box-shadow-sm);
+        }
+
+        .rh-stat-card__label {
+            font-size: 0.875rem;
+            color: var(--rh-color-text-secondary);
+            margin-bottom: var(--rh-space-sm);
+        }
+
+        .rh-stat-card__value {
+            font-family: 'Red Hat Display', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--rh-color-interactive-primary);
+        }
+
+        /* Footer */
+        .rh-footer {
+            background: var(--rh-color-surface-darkest);
+            color: var(--rh-color-surface-light);
+            padding: var(--rh-space-lg) var(--rh-space-xl);
+            text-align: center;
+            font-size: 0.875rem;
+        }
+
+        .rh-footer a {
+            color: var(--rh-color-surface-light);
+        }
+
+        /* Utilities */
+        .rh-mt-sm { margin-top: var(--rh-space-sm); }
+        .rh-mt-md { margin-top: var(--rh-space-md); }
+        .rh-mt-lg { margin-top: var(--rh-space-lg); }
+        .rh-mt-xl { margin-top: var(--rh-space-xl); }
+
+        .rh-mb-sm { margin-bottom: var(--rh-space-sm); }
+        .rh-mb-md { margin-bottom: var(--rh-space-md); }
+        .rh-mb-lg { margin-bottom: var(--rh-space-lg); }
+        .rh-mb-xl { margin-bottom: var(--rh-space-xl); }
+
+        .rh-flex { display: flex; }
+        .rh-flex--gap-sm { gap: var(--rh-space-sm); }
+        .rh-flex--gap-md { gap: var(--rh-space-md); }
+
+        .rh-text-secondary { color: var(--rh-color-text-secondary); }
+        .rh-text-sm { font-size: 0.875rem; }
+    </style>
+</head>
+<body>
+    <header class="rh-header">
+        <a href="/" class="rh-header__brand">
+            <div class="rh-header__brand-icon">PM</div>
+            <span class="rh-header__brand-text">Product Manager</span>
+        </a>
+        <nav class="rh-nav">
+            <a href="/" class="rh-nav__link {#if activeMenu == 'home'}rh-nav__link--active{/if}">Home</a>
+            <a href="/products" class="rh-nav__link {#if activeMenu == 'products'}rh-nav__link--active{/if}">Products</a>
+            <a href="/customers" class="rh-nav__link {#if activeMenu == 'customers'}rh-nav__link--active{/if}">Customers</a>
+            <a href="/suppliers" class="rh-nav__link {#if activeMenu == 'suppliers'}rh-nav__link--active{/if}">Suppliers</a>
+            <a href="/purchases" class="rh-nav__link {#if activeMenu == 'purchases'}rh-nav__link--active{/if}">Purchases</a>
+            <a href="/sales" class="rh-nav__link {#if activeMenu == 'sales'}rh-nav__link--active{/if}">Sales</a>
+        </nav>
+    </header>
+
+    <main class="rh-page">
+        {#insert/}
+    </main>
+
+    <footer class="rh-footer">
+        <p>&copy; 2026 Product Manager &mdash; Built with Quarkus + Kotlin + Qute</p>
+    </footer>
+</body>
+</html>

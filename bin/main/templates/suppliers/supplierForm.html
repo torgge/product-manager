@@ -1,0 +1,47 @@
+{#include layout/base}
+{#title}{#if action == 'create'}New Supplier{#else}Edit Supplier{/if} - Product Manager{/title}
+
+<a href="/suppliers" class="rh-btn rh-btn--link rh-mb-lg" style="display: inline-block;">&larr; Back to Suppliers</a>
+
+<div class="rh-card" style="max-width: 600px;">
+    <div class="rh-card__header">
+        <h1 class="rh-card__title">{#if action == 'create'}Add New Supplier{#else}Edit Supplier{/if}</h1>
+    </div>
+    <div class="rh-card__body">
+        <form method="post" action="{#if action == 'create'}/suppliers{#else}/suppliers/{supplier.id}{/if}">
+            <div class="rh-form-group">
+                <label class="rh-form-label rh-form-label--required" for="name">Name</label>
+                <input class="rh-form-control" type="text" id="name" name="name" value="{supplier.name}" required>
+            </div>
+
+            <div class="rh-form-group">
+                <label class="rh-form-label rh-form-label--required" for="document">Document (CNPJ)</label>
+                <input class="rh-form-control" type="text" id="document" name="document" value="{supplier.document}" required>
+            </div>
+
+            <div class="rh-form-group">
+                <label class="rh-form-label" for="email">Email</label>
+                <input class="rh-form-control" type="email" id="email" name="email" value="{supplier.email}">
+            </div>
+
+            <div class="rh-form-group">
+                <label class="rh-form-label" for="phone">Phone</label>
+                <input class="rh-form-control" type="text" id="phone" name="phone" value="{supplier.phone}">
+            </div>
+
+            <div class="rh-form-group">
+                <label class="rh-form-label" for="address">Address</label>
+                <textarea class="rh-form-control" id="address" name="address" rows="3">{supplier.address}</textarea>
+            </div>
+
+            <div class="rh-flex rh-flex--gap-md rh-mt-lg">
+                <button type="submit" class="rh-btn rh-btn--primary">
+                    {#if action == 'create'}Create Supplier{#else}Update Supplier{/if}
+                </button>
+                <a href="/suppliers" class="rh-btn rh-btn--link">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{/include}

@@ -1,0 +1,63 @@
+{#include layout/base}
+{#title}Purchases - Product Manager{/title}
+
+<div class="rh-page-header">
+    <h1 class="rh-page-header__title">Purchase Orders</h1>
+    <a href="/purchases/new" class="rh-btn rh-btn--primary">New Purchase Order</a>
+</div>
+
+{#if purchases.isEmpty()}
+<div class="rh-card">
+    <div class="rh-empty-state">
+        <div class="rh-empty-state__icon">
+            <svg width="64" height="64" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+            </svg>
+        </div>
+        <h3 class="rh-empty-state__title">No purchase orders found</h3>
+        <p class="rh-empty-state__body">There are no purchase orders yet. Create your first purchase order to get started.</p>
+        <a href="/purchases/new" class="rh-btn rh-btn--primary">New Purchase Order</a>
+    </div>
+</div>
+{#else}
+<div class="rh-card">
+    <table class="rh-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Supplier</th>
+                <th>Date</th>
+                <th>Total Amount</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {#for purchase in purchases}
+            <tr>
+                <td><strong>#{purchase.id}</strong></td>
+                <td>{purchase.supplier?.name}</td>
+                <td>{purchase.orderDate}</td>
+                <td style="font-weight: 600; color: var(--rh-color-interactive-primary);">${purchase.totalAmount}</td>
+                <td>
+                    {#if purchase.status.name() == 'PENDING'}
+                    <span class="rh-label rh-label--warning">Pending</span>
+                    {#else if purchase.status.name() == 'CONFIRMED'}
+                    <span class="rh-label rh-label--info">Confirmed</span>
+                    {#else if purchase.status.name() == 'RECEIVED'}
+                    <span class="rh-label rh-label--success">Received</span>
+                    {#else}
+                    <span class="rh-label rh-label--danger">Cancelled</span>
+                    {/if}
+                </td>
+                <td>
+                    <a href="/purchases/{purchase.id}" class="rh-btn rh-btn--secondary rh-btn--sm">View Details</a>
+                </td>
+            </tr>
+            {/for}
+        </tbody>
+    </table>
+</div>
+{/if}
+
+{/include}
