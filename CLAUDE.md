@@ -8,7 +8,7 @@ Before starting any task, verify the skill structure is intact:
 ls -la .claude/skills/*/SKILL.md 2>/dev/null | wc -l
 ```
 
-Expected: **12 skills** in `.claude/skills/`
+Expected: **13 skills** in `.claude/skills/`
 
 ### Required Skills Checklist
 - [ ] `dev/SKILL.md` - Start dev server
@@ -22,7 +22,8 @@ Expected: **12 skills** in `.claude/skills/`
 - [ ] `gen-template/SKILL.md` - Generate template
 - [ ] `gen-crud/SKILL.md` - Generate full CRUD
 - [ ] `conventions/SKILL.md` - Coding conventions
-- [ ] `architecture/SKILL.md` - Architecture reference
+- [ ] `architecture/SKILL.md` - Architecture reference (DDD)
+- [ ] `vertical-slices/SKILL.md` - Vertical Slices pattern
 
 If any skills are missing, recreate them following the patterns in existing skills.
 
@@ -30,7 +31,7 @@ If any skills are missing, recreate them following the patterns in existing skil
 
 This is a **Quarkus 3.x** application with:
 - **Language**: Kotlin
-- **Architecture**: DDD (Domain-Driven Design)
+- **Architecture**: DDD (Domain-Driven Design) + Vertical Slices
 - **UI**: Qute templates + PatternFly v6
 - **Database**: PostgreSQL
 - **Build**: Gradle
@@ -51,14 +52,26 @@ This is a **Quarkus 3.x** application with:
 - `/gen-template <type> <Name>` - Generate Qute template
 - `/gen-crud <Name> [fields]` - Generate complete CRUD stack
 
-## Architecture Layers
+## Architecture Patterns
 
+### DDD Layered (Default)
 ```
 infrastructure/web/  → Controllers (HTML), Resources (REST)
 application/service/ → Business logic
 domain/model/        → JPA entities
 domain/repository/   → Panache repositories
 ```
+
+### Vertical Slices (Feature-based)
+```
+features/{entity}/
+├── commands/        → CreateX, UpdateX, DeleteX (write operations)
+├── queries/         → GetX, ListX (read operations)
+├── {Entity}.kt      → Shared entity
+└── {Entity}Repository.kt
+```
+
+Use Vertical Slices for complex features or CQRS. See `vertical-slices/SKILL.md` for details.
 
 ## Key Conventions
 - Use `data class` for entities with `var` fields
