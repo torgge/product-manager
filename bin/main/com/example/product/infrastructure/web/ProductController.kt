@@ -103,17 +103,21 @@ class ProductController(
         @FormParam("name") name: String,
         @FormParam("description") description: String?,
         @FormParam("category") category: String?,
-        @FormParam("price") price: java.math.BigDecimal,
-        @FormParam("purchasePrice") purchasePrice: java.math.BigDecimal?,
-        @FormParam("profitMargin") profitMargin: java.math.BigDecimal?
+        @FormParam("price") priceParam: String?,
+        @FormParam("purchasePrice") purchasePriceParam: String?,
+        @FormParam("profitMargin") profitMarginParam: String?
     ): Response {
+        val price = priceParam?.takeIf { it.isNotBlank() }?.toBigDecimalOrNull() ?: java.math.BigDecimal.ZERO
+        val purchasePrice = purchasePriceParam?.takeIf { it.isNotBlank() }?.toBigDecimalOrNull() ?: java.math.BigDecimal.ZERO
+        val profitMargin = profitMarginParam?.takeIf { it.isNotBlank() }?.toBigDecimalOrNull() ?: java.math.BigDecimal.ZERO
+
         val product = Product(
             name = name,
             description = description,
             category = category,
             price = price,
-            purchasePrice = purchasePrice ?: java.math.BigDecimal.ZERO,
-            profitMargin = profitMargin ?: java.math.BigDecimal.ZERO
+            purchasePrice = purchasePrice,
+            profitMargin = profitMargin
         )
         productService.create(product)
         return Response.seeOther(URI.create("/products")).build()
@@ -127,17 +131,21 @@ class ProductController(
         @FormParam("name") name: String,
         @FormParam("description") description: String?,
         @FormParam("category") category: String?,
-        @FormParam("price") price: java.math.BigDecimal,
-        @FormParam("purchasePrice") purchasePrice: java.math.BigDecimal?,
-        @FormParam("profitMargin") profitMargin: java.math.BigDecimal?
+        @FormParam("price") priceParam: String?,
+        @FormParam("purchasePrice") purchasePriceParam: String?,
+        @FormParam("profitMargin") profitMarginParam: String?
     ): Response {
+        val price = priceParam?.takeIf { it.isNotBlank() }?.toBigDecimalOrNull() ?: java.math.BigDecimal.ZERO
+        val purchasePrice = purchasePriceParam?.takeIf { it.isNotBlank() }?.toBigDecimalOrNull() ?: java.math.BigDecimal.ZERO
+        val profitMargin = profitMarginParam?.takeIf { it.isNotBlank() }?.toBigDecimalOrNull() ?: java.math.BigDecimal.ZERO
+
         val product = Product(
             name = name,
             description = description,
             category = category,
             price = price,
-            purchasePrice = purchasePrice ?: java.math.BigDecimal.ZERO,
-            profitMargin = profitMargin ?: java.math.BigDecimal.ZERO
+            purchasePrice = purchasePrice,
+            profitMargin = profitMargin
         )
         productService.update(id, product)
         return Response.seeOther(URI.create("/products")).build()

@@ -346,6 +346,177 @@
             color: var(--rh-color-text-secondary);
         }
 
+        /* Alerts - PatternFly v6 */
+        .rh-alert {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--rh-space-sm);
+            padding: var(--rh-space-md);
+            border-radius: var(--rh-border-radius-md);
+            border: 1px solid;
+            margin-bottom: var(--rh-space-md);
+            position: relative;
+        }
+
+        .rh-alert__icon {
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .rh-alert__icon svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        .rh-alert__content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .rh-alert__title {
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin: 0 0 var(--rh-space-xs) 0;
+            line-height: 1.4;
+        }
+
+        .rh-alert__description {
+            font-size: 0.875rem;
+            color: var(--rh-color-text-secondary);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .rh-alert__close {
+            flex-shrink: 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: var(--rh-space-xs);
+            margin: calc(-1 * var(--rh-space-xs));
+            color: inherit;
+            opacity: 0.6;
+            transition: opacity 0.15s ease;
+        }
+
+        .rh-alert__close:hover {
+            opacity: 1;
+        }
+
+        .rh-alert__close svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        .rh-alert__actions {
+            display: flex;
+            gap: var(--rh-space-sm);
+            margin-top: var(--rh-space-sm);
+        }
+
+        /* Alert Variants */
+        .rh-alert--success {
+            background: #e7f4e4;
+            border-color: #92c68a;
+            color: var(--rh-color-status-success);
+        }
+
+        .rh-alert--success .rh-alert__title {
+            color: #1e4f18;
+        }
+
+        .rh-alert--danger {
+            background: #fce8e6;
+            border-color: #f4b3ac;
+            color: var(--rh-color-status-danger);
+        }
+
+        .rh-alert--danger .rh-alert__title {
+            color: #7d1007;
+        }
+
+        .rh-alert--warning {
+            background: #fef6e5;
+            border-color: #f9d67a;
+            color: #915700;
+        }
+
+        .rh-alert--warning .rh-alert__title {
+            color: #795600;
+        }
+
+        .rh-alert--info {
+            background: #e5f1fa;
+            border-color: #a3d1f2;
+            color: var(--rh-color-status-info);
+        }
+
+        .rh-alert--info .rh-alert__title {
+            color: #004080;
+        }
+
+        .rh-alert--default {
+            background: var(--rh-color-surface-lighter);
+            border-color: var(--rh-color-surface-light);
+            color: var(--rh-color-text-secondary);
+        }
+
+        .rh-alert--default .rh-alert__title {
+            color: var(--rh-color-text-primary);
+        }
+
+        /* Inline Alert (no border, minimal) */
+        .rh-alert--inline {
+            border: none;
+            background: transparent;
+            padding: var(--rh-space-sm) 0;
+        }
+
+        /* Toast Alert Group */
+        .rh-alert-group {
+            position: fixed;
+            bottom: var(--rh-space-lg);
+            right: var(--rh-space-lg);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: var(--rh-space-sm);
+            max-width: 400px;
+        }
+
+        .rh-alert-group .rh-alert {
+            box-shadow: var(--rh-box-shadow-lg);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+        }
+
         /* Empty State */
         .rh-empty-state {
             text-align: center;
@@ -487,6 +658,7 @@
             <a href="/suppliers" class="rh-nav__link {#if activeMenu == 'suppliers'}rh-nav__link--active{/if}">Suppliers</a>
             <a href="/purchases" class="rh-nav__link {#if activeMenu == 'purchases'}rh-nav__link--active{/if}">Purchases</a>
             <a href="/sales" class="rh-nav__link {#if activeMenu == 'sales'}rh-nav__link--active{/if}">Sales</a>
+            <a href="/reports" class="rh-nav__link {#if activeMenu == 'reports'}rh-nav__link--active{/if}">Reports</a>
         </nav>
     </header>
 
@@ -497,5 +669,62 @@
     <footer class="rh-footer">
         <p>&copy; 2026 Product Manager &mdash; Built with Quarkus + Kotlin + Qute</p>
     </footer>
+
+    <!-- Toast Alert Container -->
+    <div id="rh-alert-group" class="rh-alert-group" aria-live="polite"></div>
+
+    <!-- Alert JavaScript -->
+    {|<script>
+        const RhAlert = {
+            icons: {
+                success: '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>',
+                danger: '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>',
+                warning: '<svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>',
+                info: '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>',
+                default: '<svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>'
+            },
+            closeIcon: '<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>',
+
+            toast(variant, title, description, timeout = 8000) {
+                const container = document.getElementById('rh-alert-group');
+                const alert = document.createElement('div');
+                alert.className = 'rh-alert rh-alert--' + variant;
+                alert.setAttribute('role', 'alert');
+
+                const icon = this.icons[variant] || this.icons.default;
+                alert.innerHTML = '<div class="rh-alert__icon">' + icon + '</div>' +
+                    '<div class="rh-alert__content">' +
+                    '<p class="rh-alert__title">' + title + '</p>' +
+                    (description ? '<p class="rh-alert__description">' + description + '</p>' : '') +
+                    '</div>' +
+                    '<button type="button" class="rh-alert__close" aria-label="Close alert">' +
+                    this.closeIcon +
+                    '</button>';
+
+                alert.querySelector('.rh-alert__close').addEventListener('click', function() {
+                    alert.style.animation = 'slideOut 0.2s ease-in forwards';
+                    setTimeout(function() { alert.remove(); }, 200);
+                });
+
+                container.appendChild(alert);
+
+                if (timeout > 0) {
+                    setTimeout(function() {
+                        if (alert.parentNode) {
+                            alert.style.animation = 'slideOut 0.2s ease-in forwards';
+                            setTimeout(function() { alert.remove(); }, 200);
+                        }
+                    }, timeout);
+                }
+
+                return alert;
+            },
+
+            success: function(title, description, timeout) { return this.toast('success', title, description, timeout); },
+            danger: function(title, description, timeout) { return this.toast('danger', title, description, timeout); },
+            warning: function(title, description, timeout) { return this.toast('warning', title, description, timeout); },
+            info: function(title, description, timeout) { return this.toast('info', title, description, timeout); }
+        };
+    </script>|}
 </body>
 </html>

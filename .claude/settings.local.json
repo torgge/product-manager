@@ -20,7 +20,14 @@
       "Bash(git add:*)",
       "WebSearch",
       "WebFetch(domain:ux.redhat.com)",
-      "WebFetch(domain:red-hat-design-tokens.netlify.app)"
+      "WebFetch(domain:red-hat-design-tokens.netlify.app)",
+      "Bash(grep:*)",
+      "Bash(./gradlew compileKotlin:*)",
+      "WebFetch(domain:www.patternfly.org)",
+      "Bash(find:*)",
+      "Bash(./gradlew quarkusBuild:*)",
+      "Bash(git commit:*)",
+      "Bash(git push)"
     ],
     "deny": [],
     "ask": []
