@@ -1,0 +1,283 @@
+{#include layout/base}
+{#title}Balance Report - Product Manager{/title}
+
+<div class="rh-page-header">
+    <h1 class="rh-page-header__title">Balance Report</h1>
+</div>
+
+<form method="get" action="/reports">
+    <div class="rh-toolbar">
+        <div class="rh-toolbar__content">
+            <div class="rh-toolbar__group rh-toolbar__group--filter">
+                <div class="rh-toolbar__item">
+                    <select name="productId" id="productId" class="rh-toolbar__select" aria-label="Filter by product">
+                        <option value="">All Products</option>
+                        {#for product in products}
+                        <option value="{product.id}" {#if selectedProductId == product.id}selected{/if}>{product.name}</option>
+                        {/for}
+                    </select>
+                </div>
+                <div class="rh-toolbar__item">
+                    <select name="customerId" id="customerId" class="rh-toolbar__select" aria-label="Filter by customer">
+                        <option value="">All Customers</option>
+                        {#for customer in customers}
+                        <option value="{customer.id}" {#if selectedCustomerId == customer.id}selected{/if}>{customer.name}</option>
+                        {/for}
+                    </select>
+                </div>
+                <div class="rh-toolbar__item rh-toolbar__item--date-range">
+                    <label class="rh-toolbar__label">From</label>
+                    <input type="date" name="startDate" id="startDate" class="rh-toolbar__input" value="{startDate}">
+                    <label class="rh-toolbar__label">To</label>
+                    <input type="date" name="endDate" id="endDate" class="rh-toolbar__input" value="{endDate}">
+                </div>
+            </div>
+            <div class="rh-toolbar__group rh-toolbar__group--action">
+                <button type="submit" class="rh-btn rh-btn--primary">Apply Filters</button>
+                {#if selectedProductId != null || selectedCustomerId != null || startDate != '' || endDate != ''}
+                <a href="/reports" class="rh-btn rh-btn--link">Clear all</a>
+                {/if}
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="rh-stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--rh-space-md); margin-bottom: var(--rh-space-lg);">
+    <div class="rh-card rh-stat-card">
+        <div class="rh-stat-card__label">Total Revenue</div>
+        <div class="rh-stat-card__value" style="color: var(--rh-color-interactive-primary);">
+            ${report.summary.totalRevenue}
+        </div>
+        <div class="rh-stat-card__detail">{report.summary.totalOrders} orders</div>
+    </div>
+    <div class="rh-card rh-stat-card">
+        <div class="rh-stat-card__label">Total Cost</div>
+        <div class="rh-stat-card__value" style="color: var(--rh-color-status-danger);">
+            ${report.summary.totalCost}
+        </div>
+        <div class="rh-stat-card__detail">{report.summary.totalItemsSold} items sold</div>
+    </div>
+    <div class="rh-card rh-stat-card">
+        <div class="rh-stat-card__label">Total Profit</div>
+        <div class="rh-stat-card__value" style="color: var(--rh-color-status-success);">
+            ${report.summary.totalProfit}
+        </div>
+    </div>
+    <div class="rh-card rh-stat-card">
+        <div class="rh-stat-card__label">Profit Margin</div>
+        <div class="rh-stat-card__value" style="color: var(--rh-color-status-info);">
+            {report.summary.overallMarginPercent}%
+        </div>
+    </div>
+</div>
+
+{#if report.products.isEmpty()}
+<div class="rh-card">
+    <div class="rh-empty-state">
+        <div class="rh-empty-state__icon">
+            <svg width="64" height="64" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+            </svg>
+        </div>
+        <h3 class="rh-empty-state__title">No data found</h3>
+        <p class="rh-empty-state__body">There are no completed sales for the selected filters. Try adjusting your filter criteria.</p>
+    </div>
+</div>
+{#else}
+<div class="rh-card">
+    <h3 style="margin-bottom: var(--rh-space-md);">Sales by Product</h3>
+    <table class="rh-table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Category</th>
+                <th style="text-align: right;">Qty Sold</th>
+                <th style="text-align: right;">Avg Price</th>
+                <th style="text-align: right;">Revenue</th>
+                <th style="text-align: right;">Cost</th>
+                <th style="text-align: right;">Profit</th>
+                <th style="text-align: right;">Margin</th>
+            </tr>
+        </thead>
+        <tbody>
+            {#for item in report.products}
+            <tr>
+                <td><strong>{item.productName}</strong></td>
+                <td>{item.category ?: '-'}</td>
+                <td style="text-align: right;">{item.totalQuantitySold}</td>
+                <td style="text-align: right;">${item.averageSalePrice}</td>
+                <td style="text-align: right; color: var(--rh-color-interactive-primary); font-weight: 600;">
+                    ${item.totalRevenue}
+                </td>
+                <td style="text-align: right; color: var(--rh-color-status-danger);">
+                    ${item.totalCost}
+                </td>
+                <td style="text-align: right; color: var(--rh-color-status-success); font-weight: 600;">
+                    ${item.totalProfit}
+                </td>
+                <td style="text-align: right;">
+                    {#if item.profitMarginPercent >= 30}
+                    <span class="rh-label rh-label--success">{item.profitMarginPercent}%</span>
+                    {#else if item.profitMarginPercent >= 15}
+                    <span class="rh-label rh-label--warning">{item.profitMarginPercent}%</span>
+                    {#else if item.profitMarginPercent > 0}
+                    <span class="rh-label rh-label--info">{item.profitMarginPercent}%</span>
+                    {#else}
+                    <span class="rh-label rh-label--danger">{item.profitMarginPercent}%</span>
+                    {/if}
+                </td>
+            </tr>
+            {/for}
+        </tbody>
+        <tfoot>
+            <tr style="font-weight: 700; background-color: var(--rh-color-surface-lighter);">
+                <td colspan="2"><strong>TOTAL</strong></td>
+                <td style="text-align: right;">{report.summary.totalItemsSold}</td>
+                <td style="text-align: right;">-</td>
+                <td style="text-align: right; color: var(--rh-color-interactive-primary);">
+                    ${report.summary.totalRevenue}
+                </td>
+                <td style="text-align: right; color: var(--rh-color-status-danger);">
+                    ${report.summary.totalCost}
+                </td>
+                <td style="text-align: right; color: var(--rh-color-status-success);">
+                    ${report.summary.totalProfit}
+                </td>
+                <td style="text-align: right;">
+                    <span class="rh-label">{report.summary.overallMarginPercent}%</span>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+{/if}
+
+<style>
+/* Toolbar - PatternFly style */
+.rh-toolbar {
+    background: var(--rh-color-surface-lightest);
+    border: 1px solid var(--rh-color-surface-light);
+    border-radius: var(--rh-border-radius-md);
+    padding: var(--rh-space-md);
+    margin-bottom: var(--rh-space-lg);
+}
+
+.rh-toolbar__content {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--rh-space-md);
+}
+
+.rh-toolbar__group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--rh-space-sm);
+}
+
+.rh-toolbar__group--filter {
+    flex: 1;
+}
+
+.rh-toolbar__group--action {
+    margin-left: auto;
+}
+
+.rh-toolbar__item {
+    display: flex;
+    align-items: center;
+    gap: var(--rh-space-xs);
+}
+
+.rh-toolbar__item--date-range {
+    display: flex;
+    align-items: center;
+    gap: var(--rh-space-xs);
+}
+
+.rh-toolbar__label {
+    font-size: 0.875rem;
+    color: var(--rh-color-text-secondary);
+    white-space: nowrap;
+}
+
+.rh-toolbar__select,
+.rh-toolbar__input {
+    height: 36px;
+    padding: 0 var(--rh-space-sm);
+    font-size: 0.875rem;
+    font-family: inherit;
+    color: var(--rh-color-text-primary);
+    background-color: var(--rh-color-surface-lightest);
+    border: 1px solid var(--rh-color-surface-light);
+    border-radius: var(--rh-border-radius-sm);
+    transition: border-color 0.15s ease;
+}
+
+.rh-toolbar__select {
+    min-width: 140px;
+    padding-right: var(--rh-space-lg);
+    cursor: pointer;
+}
+
+.rh-toolbar__input {
+    width: 140px;
+}
+
+.rh-toolbar__select:hover,
+.rh-toolbar__input:hover {
+    border-color: var(--rh-color-text-secondary);
+}
+
+.rh-toolbar__select:focus,
+.rh-toolbar__input:focus {
+    outline: none;
+    border-color: var(--rh-color-interactive-primary);
+    box-shadow: 0 0 0 1px var(--rh-color-interactive-primary);
+}
+
+/* Stat Cards */
+.rh-stat-card {
+    text-align: center;
+    padding: var(--rh-space-lg);
+}
+.rh-stat-card__label {
+    font-size: 0.875rem;
+    color: var(--rh-color-text-secondary);
+    margin-bottom: var(--rh-space-xs);
+}
+.rh-stat-card__value {
+    font-family: 'Red Hat Display', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+.rh-stat-card__detail {
+    font-size: 0.75rem;
+    color: var(--rh-color-text-secondary);
+    margin-top: var(--rh-space-xs);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .rh-toolbar__content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .rh-toolbar__group {
+        width: 100%;
+    }
+    .rh-toolbar__group--action {
+        margin-left: 0;
+        margin-top: var(--rh-space-sm);
+    }
+    .rh-toolbar__select,
+    .rh-toolbar__input {
+        flex: 1;
+        min-width: 0;
+    }
+}
+</style>
+
+{/include}

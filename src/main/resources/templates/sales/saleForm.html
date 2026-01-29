@@ -4,14 +4,24 @@
 <a href="/sales" class="rh-btn rh-btn--link rh-mb-lg" style="display: inline-block;">&larr; Back to Sales</a>
 
 {#if customers.isEmpty()}
-<div class="rh-alert rh-alert--warning" style="max-width: 900px;">
-    <strong>No customers found</strong>
-    <p>Please <a href="/customers/new">create a customer</a> first before creating sale orders.</p>
+<div class="rh-alert rh-alert--warning" style="max-width: 900px;" role="alert">
+    <div class="rh-alert__icon">
+        <svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+    </div>
+    <div class="rh-alert__content">
+        <p class="rh-alert__title">No customers found</p>
+        <p class="rh-alert__description">Please <a href="/customers/new">create a customer</a> first before creating sale orders.</p>
+    </div>
 </div>
 {#else if products.isEmpty()}
-<div class="rh-alert rh-alert--warning" style="max-width: 900px;">
-    <strong>No products found</strong>
-    <p>Please <a href="/products/new">create a product</a> first before creating sale orders.</p>
+<div class="rh-alert rh-alert--warning" style="max-width: 900px;" role="alert">
+    <div class="rh-alert__icon">
+        <svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+    </div>
+    <div class="rh-alert__content">
+        <p class="rh-alert__title">No products found</p>
+        <p class="rh-alert__description">Please <a href="/products/new">create a product</a> first before creating sale orders.</p>
+    </div>
 </div>
 {#else}
 <div class="rh-card" style="max-width: 1200px;">
@@ -188,7 +198,7 @@
         });
 
         if (items.length === 0) {
-            alert('Please add at least one item to the sale order.');
+            RhAlert.warning('Validation Error', 'Please add at least one item to the sale order.');
             return;
         }
 
@@ -209,13 +219,17 @@
 
             if (response.ok) {
                 const sale = await response.json();
-                window.location.href = '/sales/' + sale.id;
+                RhAlert.success('Sale Created', 'Sale order #' + sale.id + ' created successfully.');
+                setTimeout(function() {
+                    window.location.href = '/sales/' + sale.id;
+                }, 1000);
             } else {
-                const error = await response.text();
-                alert('Error creating sale order: ' + error);
+                const errorData = await response.json().catch(function() { return { error: 'Unknown error' }; });
+                const errorMessage = errorData.error || 'Failed to create sale order';
+                RhAlert.danger('Error', errorMessage, 0);
             }
         } catch (error) {
-            alert('Error creating sale order: ' + error.message);
+            RhAlert.danger('Error', 'Failed to create sale order: ' + error.message, 0);
         }
     }
 </script>

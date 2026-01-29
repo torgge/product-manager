@@ -5,7 +5,7 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.Positive
+import jakarta.validation.constraints.PositiveOrZero
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
@@ -20,7 +20,7 @@ data class Product(
 
     var description: String? = null,
 
-    @field:Positive(message = "Price must be positive")
+    @field:PositiveOrZero(message = "Price must be zero or positive")
     var price: BigDecimal = BigDecimal.ZERO,
 
     var purchasePrice: BigDecimal = BigDecimal.ZERO, // Preço de compra
