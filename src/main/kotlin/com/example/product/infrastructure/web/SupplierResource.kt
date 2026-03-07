@@ -12,8 +12,19 @@ import jakarta.ws.rs.core.Response
 class SupplierResource(private val supplierService: SupplierService) {
 
     @GET
-    fun listAll(): List<Supplier> {
-        return supplierService.findAll()
+    fun list(
+        @QueryParam("search") search: String?,
+        @QueryParam("limit") @DefaultValue("10") limit: Int,
+        @QueryParam("offset") @DefaultValue("0") offset: Int
+    ): PaginatedResponse<Supplier> {
+        val all = if (search.isNullOrBlank()) {
+            supplierService.findAll()
+        } else {
+            supplierService.findByName(search)
+        }
+        val total = all.size.toLong()
+        val items = all.drop(offset).take(limit)
+        return PaginatedResponse(items, total)
     }
 
     @GET

@@ -43,6 +43,7 @@ class PurchaseService(
         supplierId: Long,
         items: List<PurchaseOrderItemRequest>,
         notes: String?,
+        location: StockLocation = StockLocation.MAIN_WAREHOUSE,
         createdBy: String = "system"
     ): PurchaseOrder {
         val supplier = supplierRepository.findById(supplierId)
@@ -51,6 +52,7 @@ class PurchaseService(
         val purchaseOrder = PurchaseOrder(
             supplier = supplier,
             notes = notes,
+            location = location,
             createdBy = createdBy,
             status = OrderStatus.PENDING
         )
@@ -127,7 +129,8 @@ class PurchaseService(
                     productId = productId,
                     quantity = item.quantity,
                     reason = "Compra #${purchase.id} - Fornecedor: ${purchase.supplier?.name}",
-                    createdBy = purchase.createdBy
+                    createdBy = purchase.createdBy,
+                    location = purchase.location
                 )
             }
         }

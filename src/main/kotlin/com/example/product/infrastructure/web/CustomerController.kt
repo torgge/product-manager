@@ -17,7 +17,8 @@ import java.net.URI
 class CustomerController(
     private val customerService: CustomerService,
     @Location("customers/customerList") private val customerList: Template,
-    @Location("customers/customerForm") private val customerForm: Template
+    @Location("customers/customerForm") private val customerForm: Template,
+    @Location("customers/customerDetail") private val customerDetail: Template
 ) {
 
     @GET
@@ -30,6 +31,15 @@ class CustomerController(
         return customerList
             .data("customers", customers)
             .data("search", search ?: "")
+            .data("activeMenu", "customers")
+    }
+
+    @GET
+    @Path("/{id}")
+    fun detail(@PathParam("id") id: Long): TemplateInstance {
+        val customer = customerService.findById(id)
+        return customerDetail
+            .data("customer", customer)
             .data("activeMenu", "customers")
     }
 

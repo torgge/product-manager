@@ -30,6 +30,9 @@ data class SaleOrder(
     @Enumerated(EnumType.STRING)
     var status: OrderStatus = OrderStatus.PENDING,
 
+    @Enumerated(EnumType.STRING)
+    var location: StockLocation = StockLocation.MAIN_WAREHOUSE,
+
     var notes: String? = null,
 
     var createdAt: LocalDateTime = LocalDateTime.now(),

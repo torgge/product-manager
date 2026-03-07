@@ -13,8 +13,19 @@ import jakarta.ws.rs.core.Response
 class ProductResource(private val productService: ProductService) {
 
     @GET
-    fun list(): List<Product> {
-        return productService.findAll()
+    fun list(
+        @QueryParam("search") search: String?,
+        @QueryParam("limit") @DefaultValue("10") limit: Int,
+        @QueryParam("offset") @DefaultValue("0") offset: Int
+    ): PaginatedResponse<Product> {
+        val all = if (search.isNullOrBlank()) {
+            productService.findAll()
+        } else {
+            productService.findByName(search)
+        }
+        val total = all.size.toLong()
+        val items = all.drop(offset).take(limit)
+        return PaginatedResponse(items, total)
     }
 
     @GET

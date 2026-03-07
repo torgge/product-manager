@@ -29,6 +29,19 @@
                 {/if}
             </dd>
 
+            <dt class="rh-text-secondary">Warehouse Location</dt>
+            <dd>
+                {#if sale.location.name() == 'MAIN_WAREHOUSE'}
+                Main Warehouse
+                {#else if sale.location.name() == 'SECONDARY_WAREHOUSE'}
+                Secondary Warehouse
+                {#else if sale.location.name() == 'RETAIL_STORE'}
+                Retail Store
+                {#else}
+                Distribution Center
+                {/if}
+            </dd>
+
             <dt class="rh-text-secondary">Total Amount</dt>
             <dd style="font-size: 1.5rem; font-weight: 600; color: var(--rh-color-interactive-primary);">${sale.totalAmount}</dd>
 

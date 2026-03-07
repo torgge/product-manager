@@ -17,7 +17,8 @@ import java.net.URI
 class SupplierController(
     private val supplierService: SupplierService,
     @Location("suppliers/supplierList") private val supplierList: Template,
-    @Location("suppliers/supplierForm") private val supplierForm: Template
+    @Location("suppliers/supplierForm") private val supplierForm: Template,
+    @Location("suppliers/supplierDetail") private val supplierDetail: Template
 ) {
 
     @GET
@@ -30,6 +31,15 @@ class SupplierController(
         return supplierList
             .data("suppliers", suppliers)
             .data("search", search ?: "")
+            .data("activeMenu", "suppliers")
+    }
+
+    @GET
+    @Path("/{id}")
+    fun detail(@PathParam("id") id: Long): TemplateInstance {
+        val supplier = supplierService.findById(id)
+        return supplierDetail
+            .data("supplier", supplier)
             .data("activeMenu", "suppliers")
     }
 

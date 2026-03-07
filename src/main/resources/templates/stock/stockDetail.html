@@ -1,0 +1,131 @@
+{#include layout/base}
+{#title}{product.name} - Stock Detail{/title}
+
+<a href="/stock" class="rh-btn rh-btn--link rh-mb-lg" style="display: inline-block;">&larr; Back to Stock</a>
+
+{#if product && stock}
+<div class="rh-card" style="max-width: 800px;">
+    <div class="rh-card__header">
+        <h1 class="rh-card__title">{product.name} - Stock</h1>
+    </div>
+    <div class="rh-card__body">
+        <dl style="display: grid; grid-template-columns: 1fr 2fr; gap: var(--rh-space-md);">
+            <dt class="rh-text-secondary">Product</dt>
+            <dd><strong>{product.name}</strong></dd>
+
+            <dt class="rh-text-secondary">Location</dt>
+            <dd><span class="rh-label rh-label--neutral">{stock.location}</span></dd>
+
+            <dt class="rh-text-secondary">Current Quantity</dt>
+            <dd style="font-size: 1.5rem; font-weight: 600; color: var(--rh-color-interactive-primary);">
+                {stock.quantity} units
+            </dd>
+
+            <dt class="rh-text-secondary">Status</dt>
+            <dd>
+                {#if stock.isOutOfStock()}
+                <span class="rh-label rh-label--danger">OUT OF STOCK</span>
+                {#else if stock.isLowStock()}
+                <span class="rh-label rh-label--warning">LOW STOCK</span>
+                {#else if stock.isHighStock()}
+                <span class="rh-label rh-label--info">HIGH STOCK</span>
+                {#else}
+                <span class="rh-label rh-label--success">NORMAL</span>
+                {/if}
+            </dd>
+
+            <dt class="rh-text-secondary">Min Quantity</dt>
+            <dd>{stock.minQuantity} units</dd>
+
+            <dt class="rh-text-secondary">Max Quantity</dt>
+            <dd>
+                {#if stock.maxQuantity}
+                {stock.maxQuantity} units
+                {#else}
+                <span class="rh-text-secondary">Not set</span>
+                {/if}
+            </dd>
+
+            <dt class="rh-text-secondary">Last Updated</dt>
+            <dd>{stock.lastUpdated}</dd>
+        </dl>
+    </div>
+    <div class="rh-card__footer">
+        <div class="rh-flex rh-flex--gap-md">
+            <a href="/stock/product/{product.id}/adjust" class="rh-btn rh-btn--primary">Adjust Stock</a>
+            <a href="/products/{product.id}" class="rh-btn rh-btn--secondary">View Product</a>
+        </div>
+    </div>
+</div>
+
+<!-- Stock Movement History -->
+<div class="rh-card rh-mt-xl" style="max-width: 800px;">
+    <div class="rh-card__header">
+        <h2 class="rh-card__title">Movement History</h2>
+    </div>
+    {#if movements && movements.size() > 0}
+    <table class="rh-table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Quantity</th>
+                <th>Balance</th>
+                <th>Reason</th>
+                <th>User</th>
+            </tr>
+        </thead>
+        <tbody>
+            {#for movement in movements}
+            <tr>
+                <td>{movement.createdAt}</td>
+                <td>
+                    {#if movement.type.name() == 'IN'}
+                    <span class="rh-label rh-label--success">IN</span>
+                    {#else if movement.type.name() == 'OUT'}
+                    <span class="rh-label rh-label--danger">OUT</span>
+                    {#else}
+                    <span class="rh-label rh-label--warning">ADJUSTMENT</span>
+                    {/if}
+                </td>
+                <td>
+                    {#if movement.type.name() == 'IN'}
+                    <strong style="color: var(--rh-color-status-success);">+{movement.quantity}</strong>
+                    {#else if movement.type.name() == 'OUT'}
+                    <strong style="color: var(--rh-color-status-danger);">-{movement.quantity}</strong>
+                    {#else}
+                    <strong>{movement.quantity}</strong>
+                    {/if}
+                </td>
+                <td><strong>{movement.balanceAfter}</strong></td>
+                <td>
+                    {#if movement.reason}
+                    {movement.reason}
+                    {#else}
+                    <span class="rh-text-secondary">-</span>
+                    {/if}
+                </td>
+                <td class="rh-text-sm rh-text-secondary">{movement.createdBy}</td>
+            </tr>
+            {/for}
+        </tbody>
+    </table>
+    {#else}
+    <div class="rh-empty-state">
+        <h3 class="rh-empty-state__title">No movements yet</h3>
+        <p class="rh-empty-state__body">Stock movements will appear here.</p>
+    </div>
+    {/if}
+</div>
+
+{#else}
+<div class="rh-card">
+    <div class="rh-empty-state">
+        <h3 class="rh-empty-state__title">Stock not found</h3>
+        <p class="rh-empty-state__body">No stock record exists for this product.</p>
+        <a href="/stock" class="rh-btn rh-btn--primary">Back to Stock</a>
+    </div>
+</div>
+{/if}
+
+{/include}

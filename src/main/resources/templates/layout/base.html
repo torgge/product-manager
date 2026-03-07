@@ -658,6 +658,7 @@
             <a href="/suppliers" class="rh-nav__link {#if activeMenu == 'suppliers'}rh-nav__link--active{/if}">Suppliers</a>
             <a href="/purchases" class="rh-nav__link {#if activeMenu == 'purchases'}rh-nav__link--active{/if}">Purchases</a>
             <a href="/sales" class="rh-nav__link {#if activeMenu == 'sales'}rh-nav__link--active{/if}">Sales</a>
+            <a href="/stock" class="rh-nav__link {#if activeMenu == 'stock'}rh-nav__link--active{/if}">Stock</a>
             <a href="/reports" class="rh-nav__link {#if activeMenu == 'reports'}rh-nav__link--active{/if}">Reports</a>
         </nav>
     </header>
@@ -725,6 +726,236 @@
             warning: function(title, description, timeout) { return this.toast('warning', title, description, timeout); },
             info: function(title, description, timeout) { return this.toast('info', title, description, timeout); }
         };
+    </script>
+
+    <!-- Entity Selector Modal Component -->
+    <div id="entity-selector-modal" class="rh-modal-backdrop" style="display: none;">
+        <div class="rh-modal">
+            <div class="rh-modal__header">
+                <h2 id="modal-title" class="rh-modal__title">Select Item</h2>
+                <button type="button" class="rh-btn rh-btn--link" onclick="EntitySelector.close()">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 0.5rem;">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                    Close
+                </button>
+            </div>
+            <div class="rh-modal__body">
+                <div class="rh-form-group">
+                    <input type="text" id="modal-search" class="rh-form-control"
+                           placeholder="Search..."
+                           oninput="EntitySelector.search(this.value)">
+                </div>
+
+                <div id="modal-table-container">
+                    <table class="rh-table">
+                        <thead id="modal-table-head">
+                            <!-- Dynamic headers -->
+                        </thead>
+                        <tbody id="modal-table-body">
+                            <!-- Dynamic rows -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="rh-pagination">
+                    <button type="button" id="prev-page" class="rh-btn rh-btn--sm rh-btn--secondary"
+                            onclick="EntitySelector.prevPage()">Previous</button>
+                    <span id="page-info">Page 1 of 1</span>
+                    <button type="button" id="next-page" class="rh-btn rh-btn--sm rh-btn--secondary"
+                            onclick="EntitySelector.nextPage()">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .rh-modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .rh-modal {
+            background: var(--rh-color-surface-lightest);
+            border-radius: var(--rh-border-radius-lg);
+            box-shadow: var(--rh-shadow-large);
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .rh-modal__header {
+            padding: var(--rh-space-lg);
+            border-bottom: 1px solid var(--rh-color-surface-medium);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .rh-modal__title {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--rh-color-text-primary);
+        }
+
+        .rh-modal__body {
+            padding: var(--rh-space-lg);
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .rh-pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--rh-space-md);
+            padding-top: var(--rh-space-md);
+            border-top: 1px solid var(--rh-color-surface-medium);
+        }
+
+        .rh-table tbody tr {
+            cursor: pointer;
+        }
+
+        .rh-table tbody tr:hover {
+            background: var(--rh-color-surface-light);
+        }
+
+        .rh-table tbody tr.selected {
+            background: rgba(0, 102, 204, 0.1);
+        }
+    </style>
+
+    <script>
+        // Entity Selector Utility
+        const EntitySelector = {
+            config: null,
+            currentPage: 1,
+            limit: 10,
+            total: 0,
+            searchQuery: '',
+            selectedItem: null,
+
+            open(config) {
+                this.config = config;
+                this.currentPage = 1;
+                this.searchQuery = '';
+                document.getElementById('modal-title').textContent = config.title;
+                document.getElementById('modal-search').value = '';
+                document.getElementById('entity-selector-modal').style.display = 'flex';
+                this.loadData();
+            },
+
+            close() {
+                document.getElementById('entity-selector-modal').style.display = 'none';
+                this.selectedItem = null;
+            },
+
+            async loadData() {
+                const offset = (this.currentPage - 1) * this.limit;
+                const searchParam = this.searchQuery ? `&search=${encodeURIComponent(this.searchQuery)}` : '';
+                const url = `${this.config.endpoint}?limit=${this.limit}&offset=${offset}${searchParam}`;
+
+                try {
+                    const response = await fetch(url);
+                    const data = await response.json();
+
+                    this.total = data.total;
+                    this.renderTable(data.items);
+                    this.updatePagination();
+                } catch (error) {
+                    RhAlert.danger('Error', 'Failed to load data: ' + error.message);
+                }
+            },
+
+            renderTable(items) {
+                const thead = document.getElementById('modal-table-head');
+                const tbody = document.getElementById('modal-table-body');
+
+                // Render headers
+                thead.innerHTML = '<tr>' + this.config.columns.map(col =>
+                    `<th>${col.label}</th>`
+                ).join('') + '</tr>';
+
+                // Render rows
+                tbody.innerHTML = items.map((item, index) => {
+                    const cells = this.config.columns.map(col => {
+                        const value = col.field.split('.').reduce((obj, key) => obj?.[key], item);
+                        return `<td>${value || '-'}</td>`;
+                    }).join('');
+
+                    const itemJson = JSON.stringify(item).replace(/"/g, '&quot;');
+                    return `<tr data-item-index="${index}" onclick="EntitySelector.selectItem(${itemJson})">${cells}</tr>`;
+                }).join('');
+
+                if (items.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="' + this.config.columns.length + '" style="text-align: center; padding: 2rem; color: var(--rh-color-text-secondary);">No results found</td></tr>';
+                }
+            },
+
+            selectItem(item) {
+                this.selectedItem = item;
+                if (this.config.onSelect) {
+                    this.config.onSelect(item);
+                }
+                this.close();
+            },
+
+            search(query) {
+                clearTimeout(this.searchTimeout);
+                this.searchTimeout = setTimeout(() => {
+                    this.searchQuery = query;
+                    this.currentPage = 1;
+                    this.loadData();
+                }, 300); // Debounce 300ms
+            },
+
+            prevPage() {
+                if (this.currentPage > 1) {
+                    this.currentPage--;
+                    this.loadData();
+                }
+            },
+
+            nextPage() {
+                const totalPages = Math.ceil(this.total / this.limit);
+                if (this.currentPage < totalPages) {
+                    this.currentPage++;
+                    this.loadData();
+                }
+            },
+
+            updatePagination() {
+                const totalPages = Math.ceil(this.total / this.limit);
+                document.getElementById('page-info').textContent = `Page ${this.currentPage} of ${totalPages || 1}`;
+                document.getElementById('prev-page').disabled = this.currentPage === 1;
+                document.getElementById('next-page').disabled = this.currentPage >= totalPages || totalPages === 0;
+            }
+        };
+
+        // Close modal on backdrop click
+        document.addEventListener('click', function(e) {
+            if (e.target.id === 'entity-selector-modal') {
+                EntitySelector.close();
+            }
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                EntitySelector.close();
+            }
+        });
     </script>|}
 </body>
 </html>

@@ -1,0 +1,72 @@
+{#include layout/base}
+{#title}{customer.name} - Product Manager{/title}
+
+<a href="/customers" class="rh-btn rh-btn--link rh-mb-lg" style="display: inline-block;">&larr; Back to Customers</a>
+
+{#if customer}
+<div class="rh-card" style="max-width: 800px;">
+    <div class="rh-card__header">
+        <h1 class="rh-card__title">{customer.name}</h1>
+    </div>
+    <div class="rh-card__body">
+        <dl style="display: grid; grid-template-columns: 1fr 2fr; gap: var(--rh-space-md);">
+            <dt class="rh-text-secondary">ID</dt>
+            <dd>{customer.id}</dd>
+
+            <dt class="rh-text-secondary">Document</dt>
+            <dd>
+                {#if customer.document}
+                {customer.document}
+                {#else}
+                <span class="rh-text-secondary">No document provided</span>
+                {/if}
+            </dd>
+
+            <dt class="rh-text-secondary">Email</dt>
+            <dd>
+                {#if customer.email}
+                <a href="mailto:{customer.email}" style="color: var(--rh-color-interactive-primary);">{customer.email}</a>
+                {#else}
+                <span class="rh-text-secondary">No email provided</span>
+                {/if}
+            </dd>
+
+            <dt class="rh-text-secondary">Phone</dt>
+            <dd>
+                {#if customer.phone}
+                <a href="tel:{customer.phone}" style="color: var(--rh-color-interactive-primary);">{customer.phone}</a>
+                {#else}
+                <span class="rh-text-secondary">No phone provided</span>
+                {/if}
+            </dd>
+
+            <dt class="rh-text-secondary">Address</dt>
+            <dd>
+                {#if customer.address}
+                {customer.address}
+                {#else}
+                <span class="rh-text-secondary">No address provided</span>
+                {/if}
+            </dd>
+        </dl>
+    </div>
+    <div class="rh-card__footer">
+        <div class="rh-flex rh-flex--gap-md">
+            <a href="/customers/{customer.id}/edit" class="rh-btn rh-btn--primary">Edit Customer</a>
+            <form method="post" action="/customers/{customer.id}/delete" style="display: inline;">
+                <button type="submit" class="rh-btn rh-btn--danger" onclick="return confirm('Are you sure you want to delete this customer?')">Delete Customer</button>
+            </form>
+        </div>
+    </div>
+</div>
+{#else}
+<div class="rh-card">
+    <div class="rh-empty-state">
+        <h3 class="rh-empty-state__title">Customer not found</h3>
+        <p class="rh-empty-state__body">The requested customer does not exist.</p>
+        <a href="/customers" class="rh-btn rh-btn--primary">Back to Customers</a>
+    </div>
+</div>
+{/if}
+
+{/include}

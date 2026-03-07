@@ -6,6 +6,18 @@
     <a href="/suppliers/new" class="rh-btn rh-btn--primary">Add Supplier</a>
 </div>
 
+<div class="rh-card rh-mb-lg">
+    <div class="rh-card__body">
+        <form method="get" action="/suppliers" class="rh-flex rh-flex--gap-sm">
+            <input class="rh-form-control" type="text" name="search" placeholder="Search suppliers..." value="{search}" style="flex: 1; max-width: 400px;">
+            <button type="submit" class="rh-btn rh-btn--secondary">Search</button>
+            {#if search}
+            <a href="/suppliers" class="rh-btn rh-btn--link">Clear</a>
+            {/if}
+        </form>
+    </div>
+</div>
+
 {#if suppliers.isEmpty()}
 <div class="rh-card">
     <div class="rh-empty-state">
@@ -15,7 +27,13 @@
             </svg>
         </div>
         <h3 class="rh-empty-state__title">No suppliers found</h3>
-        <p class="rh-empty-state__body">There are no suppliers yet. Add your first supplier to get started.</p>
+        <p class="rh-empty-state__body">
+            {#if search}
+            No suppliers match your search criteria. Try a different search term.
+            {#else}
+            There are no suppliers yet. Add your first supplier to get started.
+            {/if}
+        </p>
         <a href="/suppliers/new" class="rh-btn rh-btn--primary">Add Supplier</a>
     </div>
 </div>
@@ -40,6 +58,7 @@
                 <td>{supplier.phone ?: '-'}</td>
                 <td>
                     <div class="rh-flex rh-flex--gap-sm">
+                        <a href="/suppliers/{supplier.id}" class="rh-btn rh-btn--secondary rh-btn--sm">View</a>
                         <a href="/suppliers/{supplier.id}/edit" class="rh-btn rh-btn--secondary rh-btn--sm">Edit</a>
                         <form method="post" action="/suppliers/{supplier.id}/delete" style="display: inline;">
                             <button type="submit" class="rh-btn rh-btn--danger rh-btn--sm" onclick="return confirm('Are you sure?')">Delete</button>

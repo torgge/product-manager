@@ -12,7 +12,7 @@ data class StockOperationRequest(
     val createdBy: String = "user"
 )
 
-@Path("/api/stock")
+@Path("/api/stock/movements")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 class StockMovementResource(private val stockService: StockService) {

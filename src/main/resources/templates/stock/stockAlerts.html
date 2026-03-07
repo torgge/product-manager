@@ -1,0 +1,121 @@
+{#include layout/base}
+{#title}Stock Alerts - Product Manager{/title}
+
+<div class="rh-page-header">
+    <h1 class="rh-page-header__title">Stock Alerts</h1>
+    <a href="/stock" class="rh-btn rh-btn--secondary">View All Stock</a>
+</div>
+
+<!-- Out of Stock -->
+<div class="rh-card rh-mb-lg">
+    <div class="rh-card__header">
+        <h2 class="rh-card__title">
+            Out of Stock
+            <span class="rh-label rh-label--danger">{outOfStock.size()}</span>
+        </h2>
+    </div>
+    {#if outOfStock.isEmpty()}
+    <div class="rh-empty-state">
+        <div class="rh-empty-state__icon">
+            <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+            </svg>
+        </div>
+        <h3 class="rh-empty-state__title">No items out of stock</h3>
+        <p class="rh-empty-state__body">All products have available inventory.</p>
+    </div>
+    {#else}
+    <table class="rh-table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Location</th>
+                <th>Category</th>
+                <th>Last Updated</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {#for stock in outOfStock}
+            <tr>
+                <td><strong>{stock.product.name}</strong></td>
+                <td><span class="rh-label rh-label--neutral">{stock.location}</span></td>
+                <td>
+                    {#if stock.product.category}
+                    <span class="rh-label rh-label--info">{stock.product.category}</span>
+                    {#else}
+                    <span class="rh-text-secondary">N/A</span>
+                    {/if}
+                </td>
+                <td class="rh-text-sm rh-text-secondary">{stock.lastUpdated}</td>
+                <td>
+                    <div class="rh-flex rh-flex--gap-sm">
+                        <a href="/stock/product/{stock.product.id}" class="rh-btn rh-btn--secondary rh-btn--sm">View</a>
+                        <a href="/purchases/new" class="rh-btn rh-btn--primary rh-btn--sm">Order</a>
+                    </div>
+                </td>
+            </tr>
+            {/for}
+        </tbody>
+    </table>
+    {/if}
+</div>
+
+<!-- Low Stock -->
+<div class="rh-card">
+    <div class="rh-card__header">
+        <h2 class="rh-card__title">
+            Low Stock
+            <span class="rh-label rh-label--warning">{lowStock.size()}</span>
+        </h2>
+    </div>
+    {#if lowStock.isEmpty()}
+    <div class="rh-empty-state">
+        <div class="rh-empty-state__icon">
+            <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+            </svg>
+        </div>
+        <h3 class="rh-empty-state__title">No low stock items</h3>
+        <p class="rh-empty-state__body">All products are above minimum threshold.</p>
+    </div>
+    {#else}
+    <table class="rh-table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Location</th>
+                <th>Current</th>
+                <th>Minimum</th>
+                <th>Category</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {#for stock in lowStock}
+            <tr>
+                <td><strong>{stock.product.name}</strong></td>
+                <td><span class="rh-label rh-label--neutral">{stock.location}</span></td>
+                <td><strong>{stock.quantity}</strong> units</td>
+                <td class="rh-text-secondary">{stock.minQuantity} units</td>
+                <td>
+                    {#if stock.product.category}
+                    <span class="rh-label rh-label--info">{stock.product.category}</span>
+                    {#else}
+                    <span class="rh-text-secondary">N/A</span>
+                    {/if}
+                </td>
+                <td>
+                    <div class="rh-flex rh-flex--gap-sm">
+                        <a href="/stock/product/{stock.product.id}" class="rh-btn rh-btn--secondary rh-btn--sm">View</a>
+                        <a href="/purchases/new" class="rh-btn rh-btn--primary rh-btn--sm">Order</a>
+                    </div>
+                </td>
+            </tr>
+            {/for}
+        </tbody>
+    </table>
+    {/if}
+</div>
+
+{/include}

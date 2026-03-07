@@ -1,0 +1,91 @@
+{#include layout/base}
+{#title}Adjust Stock - {product.name}{/title}
+
+<a href="/stock/product/{product.id}" class="rh-btn rh-btn--link rh-mb-lg" style="display: inline-block;">&larr; Back to Stock Detail</a>
+
+<div class="rh-card" style="max-width: 600px;">
+    <div class="rh-card__header">
+        <h1 class="rh-card__title">Adjust Stock - {product.name}</h1>
+    </div>
+    <div class="rh-card__body">
+        {#if stock}
+        <div class="rh-alert rh-alert--info rh-mb-lg">
+            <div class="rh-alert__content">
+                <p class="rh-alert__title">Current Stock</p>
+                <p class="rh-alert__description">
+                    {stock.quantity} units at {stock.location}
+                </p>
+            </div>
+        </div>
+        {/if}
+
+        <form method="post" action="/stock/product/{product.id}/adjust">
+            <div class="rh-form-group">
+                <label class="rh-form-label rh-form-label--required">New Quantity</label>
+                <input type="number" name="quantity" class="rh-form-control"
+                       value="{#if stock}{stock.quantity}{#else}0{/if}"
+                       min="0" required>
+                <small class="rh-form-helper">Set the exact quantity for this product</small>
+            </div>
+
+            <div class="rh-form-group">
+                <label class="rh-form-label">Location</label>
+                <select name="location" class="rh-form-control">
+                    {#for loc in locations}
+                    <option value="{loc}" {#if stock && stock.location == loc}selected{/if}>{loc}</option>
+                    {/for}
+                </select>
+            </div>
+
+            <div class="rh-form-group">
+                <label class="rh-form-label rh-form-label--required">Reason</label>
+                <textarea name="reason" class="rh-form-control" rows="3" required
+                          placeholder="Explain why you're adjusting the stock (e.g., Physical count, Damaged goods)"></textarea>
+            </div>
+
+            <div class="rh-flex rh-flex--gap-md">
+                <button type="submit" class="rh-btn rh-btn--primary">Save Adjustment</button>
+                <a href="/stock/product/{product.id}" class="rh-btn rh-btn--link">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Threshold Settings -->
+<div class="rh-card rh-mt-xl" style="max-width: 600px;">
+    <div class="rh-card__header">
+        <h2 class="rh-card__title">Alert Thresholds</h2>
+    </div>
+    <div class="rh-card__body">
+        <form method="post" action="/stock/product/{product.id}/thresholds">
+            <div class="rh-form-group">
+                <label class="rh-form-label">Minimum Quantity (Low Stock Alert)</label>
+                <input type="number" name="minQuantity" class="rh-form-control"
+                       value="{#if stock}{stock.minQuantity}{#else}0{/if}"
+                       min="0">
+                <small class="rh-form-helper">Alert when stock falls to or below this level</small>
+            </div>
+
+            <div class="rh-form-group">
+                <label class="rh-form-label">Maximum Quantity (High Stock Alert)</label>
+                <input type="number" name="maxQuantity" class="rh-form-control"
+                       value="{#if stock && stock.maxQuantity}{stock.maxQuantity}{/if}"
+                       min="0">
+                <small class="rh-form-helper">Optional: Alert when stock reaches or exceeds this level</small>
+            </div>
+
+            <div class="rh-form-group">
+                <label class="rh-form-label">Location</label>
+                <select name="location" class="rh-form-control">
+                    {#for loc in locations}
+                    <option value="{loc}" {#if stock && stock.location == loc}selected{/if}>{loc}</option>
+                    {/for}
+                </select>
+            </div>
+
+            <button type="submit" class="rh-btn rh-btn--secondary">Update Thresholds</button>
+        </form>
+    </div>
+</div>
+
+{/include}

@@ -3,6 +3,7 @@ package com.example.product.infrastructure.web
 import com.example.product.application.service.PurchaseOrderItemRequest
 import com.example.product.application.service.PurchaseService
 import com.example.product.domain.model.PurchaseOrder
+import com.example.product.domain.model.StockLocation
 import jakarta.ws.rs.*
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
@@ -10,7 +11,8 @@ import jakarta.ws.rs.core.Response
 data class CreatePurchaseRequest(
     val supplierId: Long,
     val items: List<PurchaseOrderItemRequest>,
-    val notes: String?
+    val notes: String?,
+    val location: StockLocation = StockLocation.MAIN_WAREHOUSE
 )
 
 @Path("/api/purchases")
@@ -36,6 +38,7 @@ class PurchaseResource(private val purchaseService: PurchaseService) {
                 supplierId = request.supplierId,
                 items = request.items,
                 notes = request.notes,
+                location = request.location,
                 createdBy = "api-user"
             )
             Response.ok(purchase).build()

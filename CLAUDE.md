@@ -8,7 +8,7 @@ Before starting any task, verify the skill structure is intact:
 ls -la .claude/skills/*/SKILL.md 2>/dev/null | wc -l
 ```
 
-Expected: **13 skills** in `.claude/skills/`
+Expected: **15 skills** in `.claude/skills/`
 
 ### Required Skills Checklist
 - [ ] `dev/SKILL.md` - Start dev server
@@ -24,6 +24,8 @@ Expected: **13 skills** in `.claude/skills/`
 - [ ] `conventions/SKILL.md` - Coding conventions
 - [ ] `architecture/SKILL.md` - Architecture reference (DDD)
 - [ ] `vertical-slices/SKILL.md` - Vertical Slices pattern
+- [ ] `ui/SKILL.md` - UI components, PatternFly v6 fonts & classes
+- [ ] `tdd/SKILL.md` - TDD guard pattern (run tests after every modification)
 
 If any skills are missing, recreate them following the patterns in existing skills.
 
@@ -43,6 +45,9 @@ This is a **Quarkus 3.x** application with:
 - `/build` - Clean and build the project
 - `/test` - Run tests
 - `/db start|stop|restart|logs|reset` - Database operations
+
+### UI Reference
+- `/ui` - PatternFly v6 fonts, CSS classes, and component patterns
 
 ### Code Generators
 - `/gen-entity <Name> [fields]` - Generate JPA entity
@@ -79,3 +84,29 @@ Use Vertical Slices for complex features or CQRS. See `vertical-slices/SKILL.md`
 - `@Transactional` on write operations
 - PatternFly v6 CSS classes (pf-v6-c-*)
 - Qute syntax: `{variable}`, `{#if}`, `{#for}`
+- PostgreSQL container name: `product-manager-db` (use for docker exec commands)
+- Port conflicts: Check with `lsof -ti:8080` before starting server
+- `@OneToOne` creates unique constraint on FK; use `@ManyToOne` for multiple records per parent
+- Hibernate doesn't auto-drop constraints when changing relationships; drop manually with `ALTER TABLE`
+
+## TDD Rule - MANDATORY
+
+**After every code modification, run the test suite before reporting the task as done.**
+
+```bash
+./gradlew test
+```
+
+- A task is NOT complete until tests pass
+- Never skip, disable, or delete a failing test to make the suite green — fix the code
+- Report test results (pass/fail count) to the user after each run
+- See `.claude/skills/tdd/SKILL.md` for full pattern and writing test examples
+
+## UI Patterns
+
+### Modal Selector Pattern
+- `EntitySelector` utility in `base.html` for searchable, paginated selection
+- Usage: `EntitySelector.open({ title, endpoint, columns, onSelect })`
+- Debounced search (300ms), pagination (10 items/page), click row to select
+- REST APIs return `PaginatedResponse<T>` with `items: List<T>` and `total: Long`
+- Query params: `?search=query&limit=10&offset=0`

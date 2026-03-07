@@ -3,6 +3,7 @@ package com.example.product.infrastructure.web
 import com.example.product.application.service.SaleOrderItemRequest
 import com.example.product.application.service.SaleService
 import com.example.product.domain.model.SaleOrder
+import com.example.product.domain.model.StockLocation
 import jakarta.ws.rs.*
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
@@ -10,7 +11,8 @@ import jakarta.ws.rs.core.Response
 data class CreateSaleRequest(
     val customerId: Long,
     val items: List<SaleOrderItemRequest>,
-    val notes: String?
+    val notes: String?,
+    val location: StockLocation = StockLocation.MAIN_WAREHOUSE
 )
 
 @Path("/api/sales")
@@ -36,6 +38,7 @@ class SaleResource(private val saleService: SaleService) {
                 customerId = request.customerId,
                 items = request.items,
                 notes = request.notes,
+                location = request.location,
                 createdBy = "api-user"
             )
             Response.ok(sale).build()

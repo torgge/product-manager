@@ -6,14 +6,30 @@ import jakarta.ws.rs.*
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 
+data class PaginatedResponse<T>(
+    val items: List<T>,
+    val total: Long
+)
+
 @Path("/api/customers")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 class CustomerResource(private val customerService: CustomerService) {
 
     @GET
-    fun listAll(): List<Customer> {
-        return customerService.findAll()
+    fun list(
+        @QueryParam("search") search: String?,
+        @QueryParam("limit") @DefaultValue("10") limit: Int,
+        @QueryParam("offset") @DefaultValue("0") offset: Int
+    ): PaginatedResponse<Customer> {
+        val all = if (search.isNullOrBlank()) {
+            customerService.findAll()
+        } else {
+            customerService.findByName(search)
+        }
+        val total = all.size.toLong()
+        val items = all.drop(offset).take(limit)
+        return PaginatedResponse(items, total)
     }
 
     @GET

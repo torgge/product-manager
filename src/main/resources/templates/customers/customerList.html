@@ -6,6 +6,18 @@
     <a href="/customers/new" class="rh-btn rh-btn--primary">Add Customer</a>
 </div>
 
+<div class="rh-card rh-mb-lg">
+    <div class="rh-card__body">
+        <form method="get" action="/customers" class="rh-flex rh-flex--gap-sm">
+            <input class="rh-form-control" type="text" name="search" placeholder="Search customers..." value="{search}" style="flex: 1; max-width: 400px;">
+            <button type="submit" class="rh-btn rh-btn--secondary">Search</button>
+            {#if search}
+            <a href="/customers" class="rh-btn rh-btn--link">Clear</a>
+            {/if}
+        </form>
+    </div>
+</div>
+
 {#if customers.isEmpty()}
 <div class="rh-card">
     <div class="rh-empty-state">
@@ -15,7 +27,13 @@
             </svg>
         </div>
         <h3 class="rh-empty-state__title">No customers found</h3>
-        <p class="rh-empty-state__body">There are no customers yet. Add your first customer to get started.</p>
+        <p class="rh-empty-state__body">
+            {#if search}
+            No customers match your search criteria. Try a different search term.
+            {#else}
+            There are no customers yet. Add your first customer to get started.
+            {/if}
+        </p>
         <a href="/customers/new" class="rh-btn rh-btn--primary">Add Customer</a>
     </div>
 </div>
@@ -40,6 +58,7 @@
                 <td>{customer.phone ?: '-'}</td>
                 <td>
                     <div class="rh-flex rh-flex--gap-sm">
+                        <a href="/customers/{customer.id}" class="rh-btn rh-btn--secondary rh-btn--sm">View</a>
                         <a href="/customers/{customer.id}/edit" class="rh-btn rh-btn--secondary rh-btn--sm">Edit</a>
                         <form method="post" action="/customers/{customer.id}/delete" style="display: inline;">
                             <button type="submit" class="rh-btn rh-btn--danger rh-btn--sm" onclick="return confirm('Are you sure?')">Delete</button>

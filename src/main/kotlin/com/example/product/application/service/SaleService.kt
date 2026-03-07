@@ -42,6 +42,7 @@ class SaleService(
         customerId: Long,
         items: List<SaleOrderItemRequest>,
         notes: String?,
+        location: StockLocation = StockLocation.MAIN_WAREHOUSE,
         createdBy: String = "system"
     ): SaleOrder {
         val customer = customerRepository.findById(customerId)
@@ -50,6 +51,7 @@ class SaleService(
         val saleOrder = SaleOrder(
             customer = customer,
             notes = notes,
+            location = location,
             createdBy = createdBy,
             status = OrderStatus.PENDING
         )
@@ -60,11 +62,12 @@ class SaleService(
             val product = productRepository.findById(itemRequest.productId)
                 ?: throw IllegalArgumentException("Product not found: ${itemRequest.productId}")
 
-            // Verificar estoque disponível
-            val currentStock = product.id?.let { stockService.calculateCurrentStock(it) } ?: 0
+            // Verificar estoque disponível na localização selecionada
+            val stock = product.id?.let { stockService.getCurrentStock(it, location) }
+            val currentStock = stock?.quantity ?: 0
             if (currentStock < itemRequest.quantity) {
                 throw IllegalArgumentException(
-                    "Insufficient stock for product ${product.name}. Available: $currentStock, Requested: ${itemRequest.quantity}"
+                    "Insufficient stock for product ${product.name} at ${location.name}. Available: $currentStock, Requested: ${itemRequest.quantity}"
                 )
             }
 
@@ -108,7 +111,8 @@ class SaleService(
                     productId = productId,
                     quantity = item.quantity,
                     reason = "Venda #${sale.id} - Cliente: ${sale.customer?.name}",
-                    createdBy = sale.createdBy
+                    createdBy = sale.createdBy,
+                    location = sale.location
                 )
             }
         }
@@ -153,7 +157,8 @@ class SaleService(
                         productId = productId,
                         quantity = item.quantity,
                         reason = "Cancelamento da Venda #${sale.id}",
-                        createdBy = sale.createdBy
+                        createdBy = sale.createdBy,
+                        location = sale.location
                     )
                 }
             }

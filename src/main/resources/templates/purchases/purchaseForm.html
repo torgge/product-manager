@@ -32,11 +32,25 @@
         <form id="purchaseForm">
             <div class="rh-form-group">
                 <label class="rh-form-label rh-form-label--required" for="supplierId">Supplier</label>
-                <select class="rh-form-control" id="supplierId" name="supplierId" required>
-                    <option value="">Select a supplier...</option>
-                    {#for supplier in suppliers}
-                    <option value="{supplier.id}">{supplier.name} - {supplier.document}</option>
-                    {/for}
+                <div class="rh-flex rh-flex--gap-sm" style="align-items: center;">
+                    <button type="button" class="rh-btn rh-btn--secondary" onclick="openSupplierSelector()">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 0.5rem; vertical-align: middle;">
+                            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                        </svg>
+                        Select Supplier
+                    </button>
+                    <span id="selectedSupplierName" class="rh-text-secondary">No supplier selected</span>
+                </div>
+                <input type="hidden" id="supplierId" name="supplierId" required>
+            </div>
+
+            <div class="rh-form-group">
+                <label class="rh-form-label rh-form-label--required" for="location">Warehouse Location</label>
+                <select class="rh-form-control" id="location" name="location" required>
+                    <option value="MAIN_WAREHOUSE" selected>Main Warehouse</option>
+                    <option value="SECONDARY_WAREHOUSE">Secondary Warehouse</option>
+                    <option value="RETAIL_STORE">Retail Store</option>
+                    <option value="DISTRIBUTION_CENTER">Distribution Center</option>
                 </select>
             </div>
 
@@ -80,19 +94,9 @@
 {/if}
 
 <script>
-    let products = [];
     let itemCounter = 0;
 
-    document.addEventListener('DOMContentLoaded', async function() {
-        try {
-            const response = await fetch('/api/products');
-            if (response.ok) {
-                products = await response.json();
-            }
-        } catch (e) {
-            console.error('Failed to load products', e);
-        }
-
+    document.addEventListener('DOMContentLoaded', function() {
         addItem();
         document.getElementById('addItemBtn').addEventListener('click', addItem);
         document.getElementById('purchaseForm').addEventListener('submit', handleSubmit);
@@ -104,22 +108,22 @@
         const row = document.createElement('tr');
         row.id = 'item-' + itemCounter;
 
-        let productOptions = '<option value="">Select product...</option>';
-        products.forEach(p => {
-            productOptions += '<option value="' + p.id + '" data-price="' + p.price + '">' + p.name + '</option>';
-        });
-
         row.innerHTML =
             '<td>' +
-                '<select class="rh-form-control item-product" name="items[' + itemCounter + '].productId" required onchange="updateSubtotal(' + itemCounter + ')">' +
-                    productOptions +
-                '</select>' +
+                '<button type="button" class="rh-btn rh-btn--sm rh-btn--secondary" onclick="openProductSelector(' + itemCounter + ')">' +
+                    '<svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 0.25rem; vertical-align: middle;">' +
+                        '<path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>' +
+                    '</svg>' +
+                    'Select Product' +
+                '</button>' +
+                '<input type="hidden" class="item-product-id" id="productId-' + itemCounter + '" required>' +
+                '<div id="productName-' + itemCounter + '" class="rh-text-sm rh-text-secondary" style="margin-top: 0.25rem;">No product selected</div>' +
             '</td>' +
             '<td>' +
-                '<input type="number" class="rh-form-control item-quantity" name="items[' + itemCounter + '].quantity" min="1" value="1" required oninput="updateSubtotal(' + itemCounter + ')">' +
+                '<input type="number" class="rh-form-control item-quantity" id="quantity-' + itemCounter + '" min="1" value="1" required oninput="updateSubtotal(' + itemCounter + ')">' +
             '</td>' +
             '<td>' +
-                '<input type="number" class="rh-form-control item-price" name="items[' + itemCounter + '].unitPrice" step="0.01" min="0" required oninput="updateSubtotal(' + itemCounter + ')">' +
+                '<input type="number" class="rh-form-control item-price" id="unitPrice-' + itemCounter + '" step="0.01" min="0" required oninput="updateSubtotal(' + itemCounter + ')">' +
             '</td>' +
             '<td>' +
                 '<strong class="item-subtotal" id="subtotal-' + itemCounter + '">$0.00</strong>' +
@@ -140,21 +144,11 @@
     }
 
     function updateSubtotal(id) {
-        const row = document.getElementById('item-' + id);
-        if (!row) return;
+        const quantityInput = document.getElementById('quantity-' + id);
+        const priceInput = document.getElementById('unitPrice-' + id);
+        const subtotalSpan = document.getElementById('subtotal-' + id);
 
-        const productSelect = row.querySelector('.item-product');
-        const quantityInput = row.querySelector('.item-quantity');
-        const priceInput = row.querySelector('.item-price');
-        const subtotalSpan = row.querySelector('.item-subtotal');
-
-        if (productSelect.value && !priceInput.value) {
-            const selectedOption = productSelect.options[productSelect.selectedIndex];
-            const productPrice = selectedOption.getAttribute('data-price');
-            if (productPrice) {
-                priceInput.value = parseFloat(productPrice).toFixed(2);
-            }
-        }
+        if (!quantityInput || !priceInput || !subtotalSpan) return;
 
         const quantity = parseFloat(quantityInput.value) || 0;
         const price = parseFloat(priceInput.value) || 0;
@@ -176,24 +170,35 @@
     async function handleSubmit(e) {
         e.preventDefault();
 
-        const formData = new FormData(e.target);
-        const supplierId = formData.get('supplierId');
-        const notes = formData.get('notes');
+        const supplierId = document.getElementById('supplierId').value;
+        const location = document.getElementById('location').value;
+        const notes = document.getElementById('notes').value;
+
+        if (!supplierId) {
+            RhAlert.warning('Validation Error', 'Please select a supplier.');
+            return;
+        }
 
         const items = [];
         const rows = document.querySelectorAll('#itemsBody tr');
 
         rows.forEach(row => {
-            const productSelect = row.querySelector('.item-product');
-            const quantity = row.querySelector('.item-quantity').value;
-            const unitPrice = row.querySelector('.item-price').value;
+            const productIdInput = row.querySelector('.item-product-id');
+            const quantityInput = row.querySelector('.item-quantity');
+            const priceInput = row.querySelector('.item-price');
 
-            if (productSelect.value && quantity && unitPrice) {
-                items.push({
-                    productId: parseInt(productSelect.value),
-                    quantity: parseInt(quantity),
-                    unitPrice: parseFloat(unitPrice)
-                });
+            if (productIdInput && quantityInput && priceInput) {
+                const productId = productIdInput.value;
+                const quantity = quantityInput.value;
+                const unitPrice = priceInput.value;
+
+                if (productId && quantity && unitPrice) {
+                    items.push({
+                        productId: parseInt(productId),
+                        quantity: parseInt(quantity),
+                        unitPrice: parseFloat(unitPrice)
+                    });
+                }
             }
         });
 
@@ -205,6 +210,7 @@
         const purchaseData = {
             supplierId: parseInt(supplierId),
             items: items,
+            location: location,
             notes: notes || null
         };
 
@@ -231,6 +237,41 @@
         } catch (error) {
             RhAlert.danger('Error', 'Failed to create purchase order: ' + error.message, 0);
         }
+    }
+
+    function openSupplierSelector() {
+        EntitySelector.open({
+            title: 'Select Supplier',
+            endpoint: '/api/suppliers',
+            columns: [
+                { label: 'Name', field: 'name' },
+                { label: 'Document', field: 'document' },
+                { label: 'Email', field: 'email' },
+                { label: 'Phone', field: 'phone' }
+            ],
+            onSelect: function(supplier) {
+                document.getElementById('supplierId').value = supplier.id;
+                document.getElementById('selectedSupplierName').textContent = supplier.name + ' - ' + supplier.document;
+            }
+        });
+    }
+
+    function openProductSelector(itemId) {
+        EntitySelector.open({
+            title: 'Select Product',
+            endpoint: '/api/products',
+            columns: [
+                { label: 'Name', field: 'name' },
+                { label: 'Category', field: 'category' },
+                { label: 'Price', field: 'price' }
+            ],
+            onSelect: function(product) {
+                document.getElementById('productId-' + itemId).value = product.id;
+                document.getElementById('productName-' + itemId).textContent = product.name;
+                document.getElementById('unitPrice-' + itemId).value = product.price;
+                updateSubtotal(itemId);
+            }
+        });
     }
 </script>
 
