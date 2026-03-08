@@ -4,6 +4,7 @@ import com.example.product.application.service.CustomerService
 import com.example.product.application.service.ProductService
 import com.example.product.application.service.SaleService
 import com.example.product.application.service.StockService
+import com.example.product.domain.model.OrderStatus
 import io.quarkus.qute.Location
 import io.quarkus.qute.Template
 import io.quarkus.qute.TemplateInstance
@@ -12,6 +13,7 @@ import jakarta.ws.rs.*
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import java.net.URI
+import java.time.LocalDate
 
 @Path("/sales")
 @Produces(MediaType.TEXT_HTML)
@@ -27,10 +29,40 @@ class SaleController(
 ) {
 
     @GET
-    fun list(): TemplateInstance {
-        val sales = saleService.findAll()
+    fun list(
+        @QueryParam("customerName") customerName: String?,
+        @QueryParam("status") statusParam: String?,
+        @QueryParam("startDate") startDateParam: String?,
+        @QueryParam("endDate") endDateParam: String?,
+        @QueryParam("orderId") orderIdParam: String?
+    ): TemplateInstance {
+        // Parse parameters
+        val status = statusParam?.let {
+            try { OrderStatus.valueOf(it) } catch (e: Exception) { null }
+        }
+        val startDate = startDateParam?.let {
+            try { LocalDate.parse(it) } catch (e: Exception) { null }
+        }
+        val endDate = endDateParam?.let {
+            try { LocalDate.parse(it) } catch (e: Exception) { null }
+        }
+        val orderId = orderIdParam?.toLongOrNull()
+
+        // Search or list all
+        val sales = if (customerName != null || status != null || startDate != null || endDate != null || orderId != null) {
+            saleService.search(customerName, status, startDate, endDate, orderId)
+        } else {
+            saleService.findAll()
+        }
+
         return saleList
             .data("sales", sales)
+            .data("customerName", customerName ?: "")
+            .data("selectedStatus", statusParam ?: "")
+            .data("startDate", startDateParam ?: "")
+            .data("endDate", endDateParam ?: "")
+            .data("orderId", orderIdParam ?: "")
+            .data("statuses", OrderStatus.values())
             .data("activeMenu", "sales")
     }
 

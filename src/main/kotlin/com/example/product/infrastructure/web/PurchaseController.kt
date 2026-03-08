@@ -4,6 +4,7 @@ import com.example.product.application.service.ProductService
 import com.example.product.application.service.PurchaseOrderItemRequest
 import com.example.product.application.service.PurchaseService
 import com.example.product.application.service.SupplierService
+import com.example.product.domain.model.OrderStatus
 import io.quarkus.qute.Location
 import io.quarkus.qute.Template
 import io.quarkus.qute.TemplateInstance
@@ -12,6 +13,7 @@ import jakarta.ws.rs.*
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import java.net.URI
+import java.time.LocalDate
 
 @Path("/purchases")
 @Produces(MediaType.TEXT_HTML)
@@ -26,10 +28,40 @@ class PurchaseController(
 ) {
 
     @GET
-    fun list(): TemplateInstance {
-        val purchases = purchaseService.findAll()
+    fun list(
+        @QueryParam("supplierName") supplierName: String?,
+        @QueryParam("status") statusParam: String?,
+        @QueryParam("startDate") startDateParam: String?,
+        @QueryParam("endDate") endDateParam: String?,
+        @QueryParam("orderId") orderIdParam: String?
+    ): TemplateInstance {
+        // Parse parameters
+        val status = statusParam?.let {
+            try { OrderStatus.valueOf(it) } catch (e: Exception) { null }
+        }
+        val startDate = startDateParam?.let {
+            try { LocalDate.parse(it) } catch (e: Exception) { null }
+        }
+        val endDate = endDateParam?.let {
+            try { LocalDate.parse(it) } catch (e: Exception) { null }
+        }
+        val orderId = orderIdParam?.toLongOrNull()
+
+        // Search or list all
+        val purchases = if (supplierName != null || status != null || startDate != null || endDate != null || orderId != null) {
+            purchaseService.search(supplierName, status, startDate, endDate, orderId)
+        } else {
+            purchaseService.findAll()
+        }
+
         return purchaseList
             .data("purchases", purchases)
+            .data("supplierName", supplierName ?: "")
+            .data("selectedStatus", statusParam ?: "")
+            .data("startDate", startDateParam ?: "")
+            .data("endDate", endDateParam ?: "")
+            .data("orderId", orderIdParam ?: "")
+            .data("statuses", OrderStatus.values())
             .data("activeMenu", "purchases")
     }
 

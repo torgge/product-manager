@@ -6,6 +6,69 @@
     <a href="/sales/new" class="rh-btn rh-btn--primary">New Sale Order</a>
 </div>
 
+<!-- Search/Filter Form -->
+<div class="rh-card" style="margin-bottom: var(--rh-space-lg);">
+    <div class="rh-card__header">
+        <h2 class="rh-card__title">Search & Filter</h2>
+    </div>
+    <div class="rh-card__body">
+        <form method="get" action="/sales">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--rh-space-md); margin-bottom: var(--rh-space-md);">
+                <!-- Order ID -->
+                <div class="rh-form-group">
+                    <label class="rh-form-label">Order ID</label>
+                    <input type="text" name="orderId" class="rh-form-control" placeholder="e.g. 123" value="{orderId}">
+                </div>
+
+                <!-- Customer Name -->
+                <div class="rh-form-group">
+                    <label class="rh-form-label">Customer Name</label>
+                    <input type="text" name="customerName" class="rh-form-control" placeholder="Search customer..." value="{customerName}">
+                </div>
+
+                <!-- Status -->
+                <div class="rh-form-group">
+                    <label class="rh-form-label">Status</label>
+                    <select name="status" class="rh-form-control">
+                        <option value="">All Statuses</option>
+                        {#for st in statuses}
+                        <option value="{st.name()}" {#if selectedStatus == st.name()}selected{/if}>
+                            {#if st.name() == 'PENDING'}Pending
+                            {#else if st.name() == 'CONFIRMED'}Confirmed
+                            {#else if st.name() == 'RECEIVED'}Delivered
+                            {#else if st.name() == 'CANCELLED'}Cancelled
+                            {/if}
+                        </option>
+                        {/for}
+                    </select>
+                </div>
+
+                <!-- Start Date -->
+                <div class="rh-form-group">
+                    <label class="rh-form-label">From Date</label>
+                    <input type="date" name="startDate" class="rh-form-control" value="{startDate}">
+                </div>
+
+                <!-- End Date -->
+                <div class="rh-form-group">
+                    <label class="rh-form-label">To Date</label>
+                    <input type="date" name="endDate" class="rh-form-control" value="{endDate}">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: var(--rh-space-sm);">
+                <button type="submit" class="rh-btn rh-btn--primary">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 0.5rem;">
+                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
+                    Search
+                </button>
+                <a href="/sales" class="rh-btn rh-btn--secondary">Clear Filters</a>
+            </div>
+        </form>
+    </div>
+</div>
+
 {#if sales.isEmpty()}
 <div class="rh-card">
     <div class="rh-empty-state">

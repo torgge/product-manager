@@ -37,6 +37,16 @@ class SaleService(
         return saleOrderRepository.findRecent(limit)
     }
 
+    fun search(
+        customerName: String? = null,
+        status: OrderStatus? = null,
+        startDate: java.time.LocalDate? = null,
+        endDate: java.time.LocalDate? = null,
+        orderId: Long? = null
+    ): List<SaleOrder> {
+        return saleOrderRepository.search(customerName, status, startDate, endDate, orderId)
+    }
+
     @Transactional
     fun create(
         customerId: Long,

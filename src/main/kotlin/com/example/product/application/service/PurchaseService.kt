@@ -38,6 +38,16 @@ class PurchaseService(
         return purchaseOrderRepository.findRecent(limit)
     }
 
+    fun search(
+        supplierName: String? = null,
+        status: OrderStatus? = null,
+        startDate: java.time.LocalDate? = null,
+        endDate: java.time.LocalDate? = null,
+        orderId: Long? = null
+    ): List<PurchaseOrder> {
+        return purchaseOrderRepository.search(supplierName, status, startDate, endDate, orderId)
+    }
+
     @Transactional
     fun create(
         supplierId: Long,
