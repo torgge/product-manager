@@ -1,8 +1,8 @@
 package com.example.product.infrastructure.web
 
-import com.example.product.application.service.ProductService
-import com.example.product.application.service.StockService
+import com.example.product.application.service.*
 import com.example.product.domain.model.Product
+import com.example.product.domain.model.OrderStatus
 import io.quarkus.qute.Location
 import io.quarkus.qute.Template
 import io.quarkus.qute.TemplateInstance
@@ -19,6 +19,10 @@ import java.net.URI
 class ProductController(
     private val productService: ProductService,
     private val stockService: StockService,
+    private val customerService: CustomerService,
+    private val supplierService: SupplierService,
+    private val saleService: SaleService,
+    private val purchaseService: PurchaseService,
     private val index: Template,
     @Location("products/productList") private val productList: Template,
     @Location("products/productDetail") private val productDetail: Template,
@@ -27,11 +31,68 @@ class ProductController(
 
     @GET
     fun index(): TemplateInstance {
+        // Products
         val totalProducts = productService.count()
         val availableProducts = productService.findAvailableProducts().size
+
+        // Customers & Suppliers
+        val totalCustomers = customerService.findAll().size
+        val totalSuppliers = supplierService.findAll().size
+
+        // Stock Alerts
+        val lowStockItems = stockService.getLowStockAlerts()
+        val outOfStockItems = stockService.getOutOfStockItems()
+        val lowStockCount = lowStockItems.size
+        val outOfStockCount = outOfStockItems.size
+
+        // Orders
+        val pendingSales = saleService.findByStatus(OrderStatus.PENDING).size
+        val pendingPurchases = purchaseService.findByStatus(OrderStatus.PENDING).size
+        val recentSales = saleService.findRecent(5)
+        val recentPurchases = purchaseService.findRecent(5)
+
+        // Total sales value (last 10 sales)
+        val totalSalesValue = recentSales.sumOf { it.totalAmount }
+
+        // Stock Analytics
+        val allStocks = stockService.getAllStocks()
+        val totalStockQuantity = allStocks.sumOf { it.quantity }
+
+        val stockByLocation = allStocks.groupBy { it.location }
+            .mapValues { (_, stocks) ->
+                val locationQuantity = stocks.sumOf { it.quantity }
+                val percentage = if (totalStockQuantity > 0) {
+                    (locationQuantity * 100) / totalStockQuantity
+                } else {
+                    0
+                }
+                mapOf(
+                    "totalItems" to stocks.size,
+                    "totalQuantity" to locationQuantity,
+                    "lowStockCount" to stocks.count { it.isLowStock() },
+                    "outOfStockCount" to stocks.count { it.isOutOfStock() },
+                    "percentage" to percentage
+                )
+            }
+        val stockLocations = com.example.product.domain.model.StockLocation.values()
+
         return index
             .data("totalProducts", totalProducts)
             .data("availableProducts", availableProducts)
+            .data("totalCustomers", totalCustomers)
+            .data("totalSuppliers", totalSuppliers)
+            .data("lowStockCount", lowStockCount)
+            .data("outOfStockCount", outOfStockCount)
+            .data("lowStockItems", lowStockItems.take(5))
+            .data("outOfStockItems", outOfStockItems.take(5))
+            .data("pendingSales", pendingSales)
+            .data("pendingPurchases", pendingPurchases)
+            .data("recentSales", recentSales)
+            .data("recentPurchases", recentPurchases)
+            .data("totalSalesValue", totalSalesValue)
+            .data("stockByLocation", stockByLocation)
+            .data("totalStockQuantity", totalStockQuantity)
+            .data("stockLocations", stockLocations)
             .data("activeMenu", "home")
     }
 

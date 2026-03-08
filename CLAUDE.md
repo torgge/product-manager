@@ -84,10 +84,30 @@ Use Vertical Slices for complex features or CQRS. See `vertical-slices/SKILL.md`
 - `@Transactional` on write operations
 - PatternFly v6 CSS classes (pf-v6-c-*)
 - Qute syntax: `{variable}`, `{#if}`, `{#for}`
+- Qute limitations: No inline arithmetic (`{a * b}`), no ternary operators in `{#let}` - pre-calculate in controller
 - PostgreSQL container name: `product-manager-db` (use for docker exec commands)
 - Port conflicts: Check with `lsof -ti:8080` before starting server
 - `@OneToOne` creates unique constraint on FK; use `@ManyToOne` for multiple records per parent
 - Hibernate doesn't auto-drop constraints when changing relationships; drop manually with `ALTER TABLE`
+
+## Database Conventions
+
+### Actual Configuration (vs documented defaults)
+- Database: `productdb` (Docker), User: `postgres`, Password: `postgres`
+- Container: `product-manager-db`
+- Connect: `docker exec -i product-manager-db psql -U postgres -d productdb`
+
+### Schema Patterns (Hibernate auto-generation)
+- Column names: lowercase (e.g., `createdAt` → `createdat`, `purchasePrice` → `purchaseprice`)
+- Foreign keys: snake_case with underscore (e.g., `purchase_order_id`, `sale_order_id`)
+- Enum columns: VARCHAR with CHECK constraint (e.g., `location VARCHAR CHECK (location IN ('MAIN_WAREHOUSE', ...))`)
+- Check schema before SQL: `docker exec -i product-manager-db psql -U postgres -d productdb -c "\d table_name"`
+
+### Migration Scripts
+- Location: `src/main/resources/db/migrations/`
+- Naming: `V001__description.sql`, `V002__description.sql`
+- Execute (Docker): `docker cp file.sql product-manager-db:/tmp/ && docker exec -i product-manager-db psql -U postgres -d productdb -f /tmp/file.sql`
+- Always use lowercase column names and snake_case FK columns to match Hibernate
 
 ## TDD Rule - MANDATORY
 
@@ -110,3 +130,9 @@ Use Vertical Slices for complex features or CQRS. See `vertical-slices/SKILL.md`
 - Debounced search (300ms), pagination (10 items/page), click row to select
 - REST APIs return `PaginatedResponse<T>` with `items: List<T>` and `total: Long`
 - Query params: `?search=query&limit=10&offset=0`
+
+### Dashboard Data Preparation
+- Pre-calculate percentages, aggregations, and complex values in controller (Kotlin)
+- Pass simple data structures to templates (Map, List, primitives)
+- Example: `stockByLocation.mapValues { ... mapOf("totalItems" to ..., "percentage" to ...) }`
+- Qute only for simple variable substitution and loops - no complex expressions

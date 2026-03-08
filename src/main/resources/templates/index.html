@@ -1,31 +1,413 @@
 {#include layout/base}
-{#title}Home - Product Manager{/title}
+{#title}Dashboard - Product Manager{/title}
 
-<div class="rh-page-header">
-    <h1 class="rh-page-header__title">Dashboard</h1>
+<!-- Hero Header -->
+<div class="rh-page-header" style="margin-bottom: var(--rh-space-2xl);">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h1 class="rh-page-header__title">Dashboard</h1>
+            <p class="rh-text-secondary" style="margin-top: var(--rh-space-sm);">Welcome back! Here's what's happening with your inventory today.</p>
+        </div>
+        <div style="display: flex; gap: var(--rh-space-md);">
+            <a href="/sales/new" class="rh-btn rh-btn--primary">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 0.5rem;">
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                </svg>
+                New Sale
+            </a>
+            <a href="/purchases/new" class="rh-btn rh-btn--secondary">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 0.5rem;">
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                </svg>
+                New Purchase
+            </a>
+        </div>
+    </div>
 </div>
 
-<div class="rh-stats-grid">
-    <div class="rh-stat-card">
-        <div class="rh-stat-card__label">Total Products</div>
-        <div class="rh-stat-card__value">{totalProducts}</div>
+<!-- Key Metrics Grid -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--rh-space-lg); margin-bottom: var(--rh-space-2xl);">
+    <!-- Products Card -->
+    <div class="rh-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+        <div class="rh-card__body">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div>
+                    <div style="opacity: 0.9; font-size: 0.875rem; margin-bottom: var(--rh-space-sm);">Total Products</div>
+                    <div style="font-size: 2.5rem; font-weight: 700; line-height: 1;">{totalProducts}</div>
+                    <div style="opacity: 0.8; font-size: 0.875rem; margin-top: var(--rh-space-sm);">{availableProducts} available in stock</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.2); padding: var(--rh-space-md); border-radius: var(--rh-border-radius-md);">
+                    <svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76l1-1.36 1 1.36L15.38 12 17 10.83 14.92 8H20v6z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="rh-stat-card">
-        <div class="rh-stat-card__label">Available Products</div>
-        <div class="rh-stat-card__value">{availableProducts}</div>
+
+    <!-- Customers Card -->
+    <div class="rh-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border: none;">
+        <div class="rh-card__body">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div>
+                    <div style="opacity: 0.9; font-size: 0.875rem; margin-bottom: var(--rh-space-sm);">Total Customers</div>
+                    <div style="font-size: 2.5rem; font-weight: 700; line-height: 1;">{totalCustomers}</div>
+                    <div style="opacity: 0.8; font-size: 0.875rem; margin-top: var(--rh-space-sm);">Active accounts</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.2); padding: var(--rh-space-md); border-radius: var(--rh-border-radius-md);">
+                    <svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Suppliers Card -->
+    <div class="rh-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; border: none;">
+        <div class="rh-card__body">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div>
+                    <div style="opacity: 0.9; font-size: 0.875rem; margin-bottom: var(--rh-space-sm);">Total Suppliers</div>
+                    <div style="font-size: 2.5rem; font-weight: 700; line-height: 1;">{totalSuppliers}</div>
+                    <div style="opacity: 0.8; font-size: 0.875rem; margin-top: var(--rh-space-sm);">Registered suppliers</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.2); padding: var(--rh-space-md); border-radius: var(--rh-border-radius-md);">
+                    <svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Orders Card -->
+    <div class="rh-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; border: none;">
+        <div class="rh-card__body">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div>
+                    <div style="opacity: 0.9; font-size: 0.875rem; margin-bottom: var(--rh-space-sm);">Pending Orders</div>
+                    <div style="font-size: 2.5rem; font-weight: 700; line-height: 1;">{pendingSales + pendingPurchases}</div>
+                    <div style="opacity: 0.8; font-size: 0.875rem; margin-top: var(--rh-space-sm);">{pendingSales} sales · {pendingPurchases} purchases</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.2); padding: var(--rh-space-md); border-radius: var(--rh-border-radius-md);">
+                    <svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
+<!-- Stock Alerts Section -->
+{#if lowStockCount > 0 || outOfStockCount > 0}
+<div style="margin-bottom: var(--rh-space-2xl);">
+    <div class="rh-alert rh-alert--warning" role="alert" style="margin-bottom: var(--rh-space-lg);">
+        <div class="rh-alert__icon">
+            <svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+        </div>
+        <div class="rh-alert__content">
+            <p class="rh-alert__title">Stock Attention Required</p>
+            <p class="rh-alert__description">{lowStockCount} items are running low, {outOfStockCount} items are out of stock. <a href="/stock/alerts">View all alerts</a></p>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: var(--rh-space-lg);">
+        {#if lowStockCount > 0}
+        <div class="rh-card">
+            <div class="rh-card__header">
+                <h3 class="rh-card__title" style="color: var(--rh-color-status-warning);">Low Stock Items</h3>
+            </div>
+            <div class="rh-card__body" style="padding: 0;">
+                <table class="rh-table rh-table--compact">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Location</th>
+                            <th style="text-align: right;">Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {#for item in lowStockItems}
+                        <tr>
+                            <td><strong>{item.product.name}</strong></td>
+                            <td><span class="rh-label rh-label--sm">{item.location}</span></td>
+                            <td style="text-align: right; color: var(--rh-color-status-warning); font-weight: 600;">{item.quantity}</td>
+                        </tr>
+                        {/for}
+                    </tbody>
+                </table>
+            </div>
+            <div class="rh-card__footer">
+                <a href="/stock/alerts" class="rh-btn rh-btn--link rh-btn--sm">View all low stock →</a>
+            </div>
+        </div>
+        {/if}
+
+        {#if outOfStockCount > 0}
+        <div class="rh-card">
+            <div class="rh-card__header">
+                <h3 class="rh-card__title" style="color: var(--rh-color-status-danger);">Out of Stock</h3>
+            </div>
+            <div class="rh-card__body" style="padding: 0;">
+                <table class="rh-table rh-table--compact">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Location</th>
+                            <th style="text-align: right;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {#for item in outOfStockItems}
+                        <tr>
+                            <td><strong>{item.product.name}</strong></td>
+                            <td><span class="rh-label rh-label--sm">{item.location}</span></td>
+                            <td style="text-align: right;"><span class="rh-label rh-label--danger rh-label--sm">0 units</span></td>
+                        </tr>
+                        {/for}
+                    </tbody>
+                </table>
+            </div>
+            <div class="rh-card__footer">
+                <a href="/stock/alerts" class="rh-btn rh-btn--link rh-btn--sm">View all out of stock →</a>
+            </div>
+        </div>
+        {/if}
+    </div>
+</div>
+{/if}
+
+<!-- Stock Distribution by Location -->
+<div style="margin-bottom: var(--rh-space-2xl);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--rh-space-lg);">
+        <div>
+            <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0;">Stock Distribution</h2>
+            <p class="rh-text-secondary" style="margin-top: var(--rh-space-xs);">Inventory across {stockLocations.length} warehouse locations • {totalStockQuantity} total units</p>
+        </div>
+        <a href="/stock/dashboard" class="rh-btn rh-btn--secondary rh-btn--sm">Full Analytics →</a>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--rh-space-lg);">
+        {#for location in stockLocations}
+        {#let stats=stockByLocation.get(location)}
+        <div class="rh-card" style="position: relative; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;" onclick="window.location='/stock?location={location.name()}'">
+            <!-- Hover Effect -->
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--rh-color-interactive-primary), var(--rh-color-interactive-primary-hover));"></div>
+
+            <div class="rh-card__body">
+                <!-- Location Header -->
+                <div style="display: flex; align-items: center; gap: var(--rh-space-md); margin-bottom: var(--rh-space-lg);">
+                    <div style="background: var(--rh-color-surface-light); padding: var(--rh-space-sm); border-radius: var(--rh-border-radius-md);">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24" style="color: var(--rh-color-interactive-primary);">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                        </svg>
+                    </div>
+                    <div style="flex: 1; min-width: 0;">
+                        <h3 style="font-size: 1rem; font-weight: 600; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            {#if location.name() == 'MAIN_WAREHOUSE'}Main Warehouse
+                            {#else if location.name() == 'SECONDARY_WAREHOUSE'}Secondary Warehouse
+                            {#else if location.name() == 'RETAIL_STORE'}Retail Store
+                            {#else}Distribution Center
+                            {/if}
+                        </h3>
+                    </div>
+                </div>
+
+                {#if stats}
+                <!-- Stats -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--rh-space-lg); margin-bottom: var(--rh-space-md);">
+                    <div>
+                        <div class="rh-text-secondary" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Items</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--rh-color-interactive-primary); margin-top: var(--rh-space-xs);">{stats.totalItems}</div>
+                    </div>
+                    <div>
+                        <div class="rh-text-secondary" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Units</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--rh-color-interactive-primary); margin-top: var(--rh-space-xs);">{stats.totalQuantity}</div>
+                    </div>
+                </div>
+
+                <!-- Status Badges -->
+                <div style="display: flex; gap: var(--rh-space-xs); flex-wrap: wrap;">
+                    {#if stats.lowStockCount > 0}
+                    <span class="rh-label rh-label--warning rh-label--sm">{stats.lowStockCount} Low</span>
+                    {/if}
+                    {#if stats.outOfStockCount > 0}
+                    <span class="rh-label rh-label--danger rh-label--sm">{stats.outOfStockCount} Out</span>
+                    {/if}
+                    {#if stats.lowStockCount == 0 && stats.outOfStockCount == 0}
+                    <span class="rh-label rh-label--success rh-label--sm">✓ All Good</span>
+                    {/if}
+                </div>
+
+                <!-- Progress Indicator -->
+                <div style="margin-top: var(--rh-space-md);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--rh-space-xs);">
+                        <span class="rh-text-secondary" style="font-size: 0.75rem;">% of Total Stock</span>
+                        <span style="font-size: 0.75rem; font-weight: 600;">{stats.percentage}%</span>
+                    </div>
+                    <div style="background: var(--rh-color-surface-light); height: 6px; border-radius: 3px; overflow: hidden;">
+                        <div style="height: 100%; background: linear-gradient(90deg, var(--rh-color-interactive-primary), var(--rh-color-interactive-primary-hover)); width: {stats.percentage}%; transition: width 0.3s;"></div>
+                    </div>
+                </div>
+                {#else}
+                <!-- Empty State -->
+                <div style="text-align: center; padding: var(--rh-space-lg) 0; color: var(--rh-color-text-secondary);">
+                    <svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24" style="opacity: 0.3; margin-bottom: var(--rh-space-sm);">
+                        <path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm0 16H5V5h14v14z"/>
+                    </svg>
+                    <p style="font-size: 0.875rem; margin: 0;">No stock</p>
+                </div>
+                {/if}
+            </div>
+        </div>
+        {/let}
+        {/for}
+    </div>
+</div>
+
+<!-- Recent Activity Section -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: var(--rh-space-lg); margin-bottom: var(--rh-space-2xl);">
+    <!-- Recent Sales -->
+    <div class="rh-card">
+        <div class="rh-card__header">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 class="rh-card__title">Recent Sales</h3>
+                <span class="rh-label rh-label--success">+${totalSalesValue}</span>
+            </div>
+        </div>
+        <div class="rh-card__body" style="padding: 0;">
+            {#if recentSales.isEmpty()}
+            <div style="padding: var(--rh-space-xl); text-align: center; color: var(--rh-color-text-secondary);">
+                <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24" style="opacity: 0.3; margin-bottom: var(--rh-space-md);">
+                    <path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
+                </svg>
+                <p>No sales yet</p>
+                <a href="/sales/new" class="rh-btn rh-btn--primary rh-btn--sm" style="margin-top: var(--rh-space-md);">Create first sale</a>
+            </div>
+            {#else}
+            <table class="rh-table rh-table--compact">
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Customer</th>
+                        <th>Status</th>
+                        <th style="text-align: right;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {#for sale in recentSales}
+                    <tr onclick="window.location='/sales/{sale.id}'" style="cursor: pointer;">
+                        <td><strong>#{sale.id}</strong></td>
+                        <td>{sale.customer.name}</td>
+                        <td>
+                            {#if sale.status.name() == 'PENDING'}
+                            <span class="rh-label rh-label--warning rh-label--sm">Pending</span>
+                            {#else if sale.status.name() == 'CONFIRMED'}
+                            <span class="rh-label rh-label--info rh-label--sm">Confirmed</span>
+                            {#else if sale.status.name() == 'RECEIVED'}
+                            <span class="rh-label rh-label--success rh-label--sm">Delivered</span>
+                            {#else}
+                            <span class="rh-label rh-label--danger rh-label--sm">Cancelled</span>
+                            {/if}
+                        </td>
+                        <td style="text-align: right; font-weight: 600;">${sale.totalAmount}</td>
+                    </tr>
+                    {/for}
+                </tbody>
+            </table>
+            {/if}
+        </div>
+        <div class="rh-card__footer">
+            <a href="/sales" class="rh-btn rh-btn--link rh-btn--sm">View all sales →</a>
+        </div>
+    </div>
+
+    <!-- Recent Purchases -->
+    <div class="rh-card">
+        <div class="rh-card__header">
+            <h3 class="rh-card__title">Recent Purchases</h3>
+        </div>
+        <div class="rh-card__body" style="padding: 0;">
+            {#if recentPurchases.isEmpty()}
+            <div style="padding: var(--rh-space-xl); text-align: center; color: var(--rh-color-text-secondary);">
+                <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24" style="opacity: 0.3; margin-bottom: var(--rh-space-md);">
+                    <path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
+                </svg>
+                <p>No purchases yet</p>
+                <a href="/purchases/new" class="rh-btn rh-btn--primary rh-btn--sm" style="margin-top: var(--rh-space-md);">Create first purchase</a>
+            </div>
+            {#else}
+            <table class="rh-table rh-table--compact">
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Supplier</th>
+                        <th>Status</th>
+                        <th style="text-align: right;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {#for purchase in recentPurchases}
+                    <tr onclick="window.location='/purchases/{purchase.id}'" style="cursor: pointer;">
+                        <td><strong>#{purchase.id}</strong></td>
+                        <td>{purchase.supplier.name}</td>
+                        <td>
+                            {#if purchase.status.name() == 'PENDING'}
+                            <span class="rh-label rh-label--warning rh-label--sm">Pending</span>
+                            {#else if purchase.status.name() == 'CONFIRMED'}
+                            <span class="rh-label rh-label--info rh-label--sm">Confirmed</span>
+                            {#else if purchase.status.name() == 'RECEIVED'}
+                            <span class="rh-label rh-label--success rh-label--sm">Received</span>
+                            {#else}
+                            <span class="rh-label rh-label--danger rh-label--sm">Cancelled</span>
+                            {/if}
+                        </td>
+                        <td style="text-align: right; font-weight: 600;">${purchase.totalAmount}</td>
+                    </tr>
+                    {/for}
+                </tbody>
+            </table>
+            {/if}
+        </div>
+        <div class="rh-card__footer">
+            <a href="/purchases" class="rh-btn rh-btn--link rh-btn--sm">View all purchases →</a>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions Grid -->
 <div class="rh-card">
     <div class="rh-card__header">
         <h2 class="rh-card__title">Quick Actions</h2>
     </div>
     <div class="rh-card__body">
-        <div class="rh-flex rh-flex--gap-md">
-            <a href="/products" class="rh-btn rh-btn--primary">View All Products</a>
-            <a href="/products/new" class="rh-btn rh-btn--secondary">Add New Product</a>
-            <a href="/customers" class="rh-btn rh-btn--secondary">Manage Customers</a>
-            <a href="/suppliers" class="rh-btn rh-btn--secondary">Manage Suppliers</a>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--rh-space-md);">
+            <a href="/products/new" class="rh-btn rh-btn--secondary" style="height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--rh-space-sm);">
+                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                </svg>
+                <span>Add Product</span>
+            </a>
+            <a href="/customers/new" class="rh-btn rh-btn--secondary" style="height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--rh-space-sm);">
+                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+                <span>Add Customer</span>
+            </a>
+            <a href="/suppliers/new" class="rh-btn rh-btn--secondary" style="height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--rh-space-sm);">
+                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                </svg>
+                <span>Add Supplier</span>
+            </a>
+            <a href="/stock" class="rh-btn rh-btn--secondary" style="height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--rh-space-sm);">
+                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+                </svg>
+                <span>Manage Stock</span>
+            </a>
         </div>
     </div>
 </div>

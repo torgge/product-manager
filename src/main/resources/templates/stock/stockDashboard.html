@@ -1,0 +1,254 @@
+{#include layout/base}
+{#title}Stock Analytics Dashboard - Product Manager{/title}
+
+<!-- Header -->
+<div class="rh-page-header" style="margin-bottom: var(--rh-space-2xl);">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h1 class="rh-page-header__title">Stock Analytics</h1>
+            <p class="rh-text-secondary" style="margin-top: var(--rh-space-sm);">Comprehensive inventory insights across all locations</p>
+        </div>
+        <div style="display: flex; gap: var(--rh-space-md);">
+            <a href="/stock" class="rh-btn rh-btn--secondary">View Stock List</a>
+            <a href="/stock/alerts" class="rh-btn rh-btn--warning">Stock Alerts</a>
+        </div>
+    </div>
+</div>
+
+<!-- Overall Stats -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--rh-space-lg); margin-bottom: var(--rh-space-2xl);">
+    <div class="rh-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+        <div class="rh-card__body">
+            <div style="opacity: 0.9; font-size: 0.875rem; margin-bottom: var(--rh-space-sm);">Total Stock Items</div>
+            <div style="font-size: 2.5rem; font-weight: 700; line-height: 1;">{totalItems}</div>
+            <div style="opacity: 0.8; font-size: 0.875rem; margin-top: var(--rh-space-sm);">Across all locations</div>
+        </div>
+    </div>
+
+    <div class="rh-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; border: none;">
+        <div class="rh-card__body">
+            <div style="opacity: 0.9; font-size: 0.875rem; margin-bottom: var(--rh-space-sm);">Total Quantity</div>
+            <div style="font-size: 2.5rem; font-weight: 700; line-height: 1;">{totalQuantity}</div>
+            <div style="opacity: 0.8; font-size: 0.875rem; margin-top: var(--rh-space-sm);">Units in inventory</div>
+        </div>
+    </div>
+
+    <div class="rh-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; border: none;">
+        <div class="rh-card__body">
+            <div style="opacity: 0.9; font-size: 0.875rem; margin-bottom: var(--rh-space-sm);">Low Stock Alerts</div>
+            <div style="font-size: 2.5rem; font-weight: 700; line-height: 1;">{lowStockCount}</div>
+            <div style="opacity: 0.8; font-size: 0.875rem; margin-top: var(--rh-space-sm);">Requires attention</div>
+        </div>
+    </div>
+
+    <div class="rh-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border: none;">
+        <div class="rh-card__body">
+            <div style="opacity: 0.9; font-size: 0.875rem; margin-bottom: var(--rh-space-sm);">Out of Stock</div>
+            <div style="font-size: 2.5rem; font-weight: 700; line-height: 1;">{outOfStockCount}</div>
+            <div style="opacity: 0.8; font-size: 0.875rem; margin-top: var(--rh-space-sm);">Needs restocking</div>
+        </div>
+    </div>
+
+    <div class="rh-card">
+        <div class="rh-card__body">
+            <div class="rh-text-secondary" style="font-size: 0.875rem; margin-bottom: var(--rh-space-sm);">Average Stock</div>
+            <div style="font-size: 2.5rem; font-weight: 700; line-height: 1; color: var(--rh-color-interactive-primary);">{averageStock}</div>
+            <div class="rh-text-secondary" style="font-size: 0.875rem; margin-top: var(--rh-space-sm);">Units per product</div>
+        </div>
+    </div>
+</div>
+
+<!-- Stock by Location -->
+<div class="rh-card" style="margin-bottom: var(--rh-space-2xl);">
+    <div class="rh-card__header">
+        <h2 class="rh-card__title">Stock Distribution by Location</h2>
+    </div>
+    <div class="rh-card__body">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--rh-space-xl);">
+            {#for location in locations}
+            {#let stats=stockByLocation.get(location)}
+            <div style="border: 2px solid var(--rh-color-border-subtle); border-radius: var(--rh-border-radius-lg); padding: var(--rh-space-lg); position: relative; overflow: hidden;">
+                <!-- Location Header -->
+                <div style="display: flex; align-items: center; gap: var(--rh-space-md); margin-bottom: var(--rh-space-lg);">
+                    <div style="background: var(--rh-color-surface-light); padding: var(--rh-space-md); border-radius: var(--rh-border-radius-md);">
+                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24" style="color: var(--rh-color-interactive-primary);">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.125rem; font-weight: 600; margin: 0;">
+                            {#if location.name() == 'MAIN_WAREHOUSE'}Main Warehouse
+                            {#else if location.name() == 'SECONDARY_WAREHOUSE'}Secondary Warehouse
+                            {#else if location.name() == 'RETAIL_STORE'}Retail Store
+                            {#else}Distribution Center
+                            {/if}
+                        </h3>
+                        <div class="rh-text-secondary" style="font-size: 0.875rem;">{location.name()}</div>
+                    </div>
+                </div>
+
+                {#if stats}
+                <!-- Stats Grid -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--rh-space-md); margin-bottom: var(--rh-space-md);">
+                    <div>
+                        <div class="rh-text-secondary" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Items</div>
+                        <div style="font-size: 1.75rem; font-weight: 700; color: var(--rh-color-interactive-primary);">{stats.totalItems}</div>
+                    </div>
+                    <div>
+                        <div class="rh-text-secondary" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Quantity</div>
+                        <div style="font-size: 1.75rem; font-weight: 700; color: var(--rh-color-interactive-primary);">{stats.totalQuantity}</div>
+                    </div>
+                </div>
+
+                <!-- Alert Indicators -->
+                <div style="display: flex; gap: var(--rh-space-sm);">
+                    {#if stats.lowStockCount > 0}
+                    <span class="rh-label rh-label--warning rh-label--sm">{stats.lowStockCount} Low</span>
+                    {/if}
+                    {#if stats.outOfStockCount > 0}
+                    <span class="rh-label rh-label--danger rh-label--sm">{stats.outOfStockCount} Out</span>
+                    {/if}
+                    {#if stats.lowStockCount == 0 && stats.outOfStockCount == 0}
+                    <span class="rh-label rh-label--success rh-label--sm">All Good</span>
+                    {/if}
+                </div>
+
+                <!-- Progress Bar -->
+                <div style="margin-top: var(--rh-space-md); background: var(--rh-color-surface-light); height: 8px; border-radius: 4px; overflow: hidden;">
+                    <div style="height: 100%; background: linear-gradient(90deg, var(--rh-color-interactive-primary), var(--rh-color-interactive-primary-hover)); width: {#if stats.totalQuantity > 0}{(stats.totalQuantity * 100) / totalQuantity}%{#else}0%{/if};"></div>
+                </div>
+                {#else}
+                <div style="text-align: center; padding: var(--rh-space-xl); color: var(--rh-color-text-secondary);">
+                    <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24" style="opacity: 0.3; margin-bottom: var(--rh-space-sm);">
+                        <path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm0 16H5V5h14v14z"/>
+                    </svg>
+                    <p>No stock in this location</p>
+                </div>
+                {/if}
+            </div>
+            {/let}
+            {/for}
+        </div>
+    </div>
+</div>
+
+<!-- Two Column Layout for Top Products and Categories -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: var(--rh-space-lg); margin-bottom: var(--rh-space-2xl);">
+    <!-- Top Products -->
+    <div class="rh-card">
+        <div class="rh-card__header">
+            <h2 class="rh-card__title">Top 10 Products by Stock</h2>
+        </div>
+        <div class="rh-card__body" style="padding: 0;">
+            {#if topProducts.isEmpty()}
+            <div style="padding: var(--rh-space-xl); text-align: center; color: var(--rh-color-text-secondary);">
+                <p>No products in stock</p>
+            </div>
+            {#else}
+            <table class="rh-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Product</th>
+                        <th style="text-align: center;">Locations</th>
+                        <th style="text-align: right;">Total Qty</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {#for item in topProducts}
+                    <tr>
+                        <td>
+                            <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--rh-color-interactive-primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.875rem;">
+                                {item.rank}
+                            </div>
+                        </td>
+                        <td>
+                            <strong>{item.product.name}</strong>
+                            {#if item.product.category}
+                            <div class="rh-text-secondary" style="font-size: 0.875rem;">{item.product.category}</div>
+                            {/if}
+                        </td>
+                        <td style="text-align: center;">
+                            <span class="rh-label rh-label--sm">{item.locations} loc.</span>
+                        </td>
+                        <td style="text-align: right; font-weight: 700; color: var(--rh-color-interactive-primary); font-size: 1.125rem;">
+                            {item.totalQuantity}
+                        </td>
+                    </tr>
+                    {/for}
+                </tbody>
+            </table>
+            {/if}
+        </div>
+    </div>
+
+    <!-- Stock by Category -->
+    <div class="rh-card">
+        <div class="rh-card__header">
+            <h2 class="rh-card__title">Stock Analysis by Category</h2>
+        </div>
+        <div class="rh-card__body" style="padding: 0;">
+            {#if productsByCategory.isEmpty()}
+            <div style="padding: var(--rh-space-xl); text-align: center; color: var(--rh-color-text-secondary);">
+                <p>No categories found</p>
+            </div>
+            {#else}
+            <table class="rh-table">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th style="text-align: center;">Products</th>
+                        <th style="text-align: right;">Total Stock</th>
+                        <th style="text-align: right;">Avg/Product</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {#each productsByCategory}
+                    <tr>
+                        <td>
+                            <strong>{it.key}</strong>
+                            <div style="background: var(--rh-color-surface-light); height: 6px; border-radius: 3px; margin-top: var(--rh-space-xs); overflow: hidden;">
+                                <div style="height: 100%; background: var(--rh-color-interactive-primary); width: {#if it.value.totalStock > 0}{(it.value.totalStock * 100) / totalQuantity}%{#else}0%{/if};"></div>
+                            </div>
+                        </td>
+                        <td style="text-align: center;">
+                            <span class="rh-label rh-label--sm">{it.value.productCount}</span>
+                        </td>
+                        <td style="text-align: right; font-weight: 600;">
+                            {it.value.totalStock}
+                        </td>
+                        <td style="text-align: right; color: var(--rh-color-text-secondary);">
+                            {it.value.avgStock}
+                        </td>
+                    </tr>
+                    {/each}
+                </tbody>
+            </table>
+            {/if}
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="rh-card">
+    <div class="rh-card__header">
+        <h2 class="rh-card__title">Quick Actions</h2>
+    </div>
+    <div class="rh-card__body">
+        <div style="display: flex; flex-wrap: wrap; gap: var(--rh-space-md);">
+            <a href="/stock?filter=low" class="rh-btn rh-btn--warning">View Low Stock Items</a>
+            <a href="/stock?filter=out" class="rh-btn rh-btn--danger">View Out of Stock</a>
+            {#for location in locations}
+            <a href="/stock?location={location.name()}" class="rh-btn rh-btn--secondary">
+                View {#if location.name() == 'MAIN_WAREHOUSE'}Main Warehouse
+                {#else if location.name() == 'SECONDARY_WAREHOUSE'}Secondary
+                {#else if location.name() == 'RETAIL_STORE'}Retail
+                {#else}Distribution
+                {/if}
+            </a>
+            {/for}
+        </div>
+    </div>
+</div>
+
+{/include}

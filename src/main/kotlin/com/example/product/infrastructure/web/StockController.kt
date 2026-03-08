@@ -21,8 +21,79 @@ class StockController(
     @Location("stock/stockList") private val stockList: Template,
     @Location("stock/stockDetail") private val stockDetail: Template,
     @Location("stock/stockAdjustment") private val stockAdjustment: Template,
-    @Location("stock/stockAlerts") private val stockAlerts: Template
+    @Location("stock/stockAlerts") private val stockAlerts: Template,
+    @Location("stock/stockDashboard") private val stockDashboard: Template
 ) {
+
+    @GET
+    @Path("/dashboard")
+    fun dashboard(): TemplateInstance {
+        val allStocks = stockService.getAllStocks()
+
+        // Calculate totals by location
+        val stockByLocation = allStocks.groupBy { it.location }
+            .mapValues { (_, stocks) ->
+                mapOf(
+                    "totalItems" to stocks.size,
+                    "totalQuantity" to stocks.sumOf { it.quantity },
+                    "lowStockCount" to stocks.count { it.isLowStock() },
+                    "outOfStockCount" to stocks.count { it.isOutOfStock() }
+                )
+            }
+
+        // Top products by quantity
+        val topProducts = allStocks
+            .groupBy { it.product?.id }
+            .mapNotNull { (_, stocks) ->
+                stocks.firstOrNull()?.let { stock ->
+                    mapOf(
+                        "product" to stock.product,
+                        "totalQuantity" to stocks.sumOf { it.quantity },
+                        "locations" to stocks.size
+                    )
+                }
+            }
+            .sortedByDescending { it["totalQuantity"] as Int }
+            .take(10)
+            .mapIndexed { index, item ->
+                item + ("rank" to index + 1)
+            }
+
+        // Category analysis
+        val productsByCategory = productService.findAll()
+            .groupBy { it.category ?: "Uncategorized" }
+            .mapValues { (_, products) ->
+                val categoryStocks = allStocks.filter { stock ->
+                    products.any { it.id == stock.product?.id }
+                }
+                mapOf(
+                    "productCount" to products.size,
+                    "totalStock" to categoryStocks.sumOf { it.quantity },
+                    "avgStock" to if (products.isNotEmpty())
+                        categoryStocks.sumOf { it.quantity } / products.size
+                        else 0
+                )
+            }
+
+        // Overall stats
+        val totalItems = allStocks.size
+        val totalQuantity = allStocks.sumOf { it.quantity }
+        val lowStockCount = allStocks.count { it.isLowStock() }
+        val outOfStockCount = allStocks.count { it.isOutOfStock() }
+        val averageStock = if (allStocks.isNotEmpty()) totalQuantity / allStocks.size else 0
+
+        return stockDashboard
+            .data("stockByLocation", stockByLocation)
+            .data("topProducts", topProducts)
+            .data("productsByCategory", productsByCategory)
+            .data("totalItems", totalItems)
+            .data("totalQuantity", totalQuantity)
+            .data("lowStockCount", lowStockCount)
+            .data("outOfStockCount", outOfStockCount)
+            .data("averageStock", averageStock)
+            .data("locations", StockLocation.values())
+            .data("activeMenu", "stock")
+    }
 
     @GET
     fun list(
